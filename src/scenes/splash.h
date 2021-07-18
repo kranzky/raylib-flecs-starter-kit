@@ -5,8 +5,8 @@
 
 #include "../components/scene.h"
 
-void init_splash(ecs_world_t *world, const Scene *scene);
-bool update_splash(ecs_world_t *world, const Scene *scene);
-void fini_splash(ecs_world_t *world, const Scene *scene);
+void init_splash(ecs_world_t *world, const Scene *scene, ecs_entity_t parent);
+bool update_splash(ecs_world_t *world, const Scene *scene, ecs_entity_t parent);
+void fini_splash(ecs_world_t *world, const Scene *scene, ecs_entity_t parent);
 
 #endif

@@ -7,6 +7,7 @@
 #include "scene.h"
 
 #include "../scenes/splash.h"
+#include "../scenes/title.h"
 
 //==============================================================================
 
@@ -14,44 +15,58 @@
 
 //==============================================================================
 
-static inline void _init(ecs_world_t *world, const Scene *scene)
+static inline void _init(ecs_world_t *world, Scene *scene, ecs_entity_t entity)
 {
   switch (scene->id)
   {
   case SCENE_SPLASH:
-    init_splash(world, scene);
+    init_splash(world, scene, entity);
+    break;
+  case SCENE_TITLE:
+    init_title(world, scene, entity);
     break;
   default:
     break;
   }
+  scene->state = SCENE_STATE_RUNNING;
 }
 
 //------------------------------------------------------------------------------
 
-static inline bool _update(ecs_world_t *world, const Scene *scene)
+static inline void _update(ecs_world_t *world, Scene *scene, ecs_entity_t entity)
 {
+  bool status = false;
   switch (scene->id)
   {
   case SCENE_SPLASH:
-    return update_splash(world, scene);
+    status = update_splash(world, scene, entity);
+    break;
+  case SCENE_TITLE:
+    status = update_title(world, scene, entity);
+    break;
   default:
     break;
   }
-  return false;
+  if (!status)
+    scene->state = SCENE_STATE_STOPPING;
 }
 
 //------------------------------------------------------------------------------
 
-static inline void _fini(ecs_world_t *world, const Scene *scene)
+static inline void _fini(ecs_world_t *world, Scene *scene, ecs_entity_t entity)
 {
   switch (scene->id)
   {
   case SCENE_SPLASH:
-    fini_splash(world, scene);
+    fini_splash(world, scene, entity);
+    break;
+  case SCENE_TITLE:
+    fini_title(world, scene, entity);
     break;
   default:
     break;
   }
+  ecs_delete(world, entity);
 }
 
 //==============================================================================
@@ -64,18 +79,14 @@ void update_scene(ecs_iter_t *it)
     switch (scene[i].state)
     {
     case SCENE_STATE_STARTING:
-      _init(it->world, &scene[i]);
-      scene[i].state = SCENE_STATE_RUNNING;
+      _init(it->world, &scene[i], it->entities[i]);
       break;
     case SCENE_STATE_RUNNING:
-      if (!_update(it->world, &scene[i]))
-        scene[i].state = SCENE_STATE_STOPPING;
-      else
-        scene[i].time += it->delta_time;
+      _update(it->world, &scene[i], it->entities[i]);
+      scene[i].time += it->delta_time;
       break;
     case SCENE_STATE_STOPPING:
-      _fini(it->world, &scene[i]);
-      ecs_delete(it->world, it->entities[i]);
+      _fini(it->world, &scene[i], it->entities[i]);
       break;
     default:
       TraceLog(LOG_WARNING, "bad scene state");
