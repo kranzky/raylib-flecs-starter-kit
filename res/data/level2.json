@@ -1,0 +1,10 @@
+{
+  "name":"Level Two",
+  "sheep":[
+    {
+      "position": [0, 1],
+      "tint": 4294967295,
+      "size": 1.0
+    }
+  ]
+}
