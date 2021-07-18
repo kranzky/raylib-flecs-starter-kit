@@ -1,0 +1,11 @@
+{
+  "files.associations": {
+    "queue": "c",
+    "stack": "c",
+    "random": "c",
+    "__locale": "c",
+    "ios": "c"
+  },
+  "C_Cpp.default.includePath": [],
+  "files.eol": "\n"
+}
