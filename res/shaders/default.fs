@@ -2,6 +2,8 @@
 
 in vec2 fragTexCoord;
 
+uniform float seconds;
+
 out vec4 finalColor;
 
 void main()

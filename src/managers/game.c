@@ -48,7 +48,7 @@ static inline void _init_raylib()
   SetTraceLogLevel(LOG_ERROR);
 #endif
 #ifdef DEBUG
-  SetTraceLogLevel(LOG_DEBUG);
+  SetTraceLogLevel(LOG_TRACE);
 #endif
 
   int flags = FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT;
@@ -114,7 +114,7 @@ void game_manager_loop(void)
   RenderTexture2D *playfield = texture_manager_playfield();
   Rectangle src = {0.0f, 0.0f, (float)RASTER_WIDTH, (float)-RASTER_HEIGHT};
 
-  // entity_manager_spawn_stage(STAGE_SPLASH, MAX_STAGES, "Splash Screen");
+  entity_manager_spawn_scene(SCENE_SPLASH);
 
   while (running)
   {
