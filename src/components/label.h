@@ -26,7 +26,7 @@ typedef enum TextVerticalAlignment
 typedef struct Label
 {
   Font *font;
-  const char *message;
+  const char *text;
   TextAlignment align;
   TextVerticalAlignment valign;
   int size;

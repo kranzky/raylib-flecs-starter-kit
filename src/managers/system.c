@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include "../systems/scene.h"
+#include "../systems/render.h"
 
 //==============================================================================
 
@@ -20,4 +21,5 @@ void system_manager_init(ecs_world_t *world)
 {
   ecs_atfini(world, _fini, NULL);
   ECS_SYSTEM(world, update_scene, EcsOnUpdate, [inout] Scene);
+  ECS_SYSTEM(world, render_labels, EcsOnStore, [in] Label, [in] Spatial, [in] Tinted);
 }

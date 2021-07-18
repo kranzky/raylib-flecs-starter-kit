@@ -69,8 +69,8 @@ endif
 DEPDIR := .d
 CFLAGS += -MT $@ -MMD -MP -MF $(DEPDIR)/$*.Td
 
-SOURCES := $(wildcard $(SRCDIR)/*.c $(SRCDIR)/systems/*.c $(SRCDIR)/managers/*.c)
-INCLUDES := $(wildcard $(SRCDIR)/*.h $(SRCDIR)/components/*.h $(SRCDIR)/systems/*.h $(SRCDIR)/managers/*.h)
+SOURCES := $(wildcard $(SRCDIR)/*.c $(SRCDIR)/systems/*.c $(SRCDIR)/managers/*.c $(SRCDIR)/scenes/*.c)
+INCLUDES := $(wildcard $(SRCDIR)/*.h $(SRCDIR)/components/*.h $(SRCDIR)/systems/*.h $(SRCDIR)/managers/*.h $(SRCDIR)/scenes/*.h)
 OBJECTS := $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 rm = rm -f
 

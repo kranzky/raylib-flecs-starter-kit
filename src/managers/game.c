@@ -130,11 +130,10 @@ void game_manager_loop(void)
 
     float scale = MIN((float)window_width / RASTER_WIDTH, (float)window_height / RASTER_HEIGHT);
     Rectangle dst = {
-      (window_width - ((float)RASTER_WIDTH * scale)) * 0.5f,
-      (window_height - ((float)RASTER_HEIGHT * scale)) * 0.5f,
-      (float)RASTER_WIDTH * scale,
-      (float)RASTER_HEIGHT * scale
-    };
+        (window_width - ((float)RASTER_WIDTH * scale)) * 0.5f,
+        (window_height - ((float)RASTER_HEIGHT * scale)) * 0.5f,
+        (float)RASTER_WIDTH * scale,
+        (float)RASTER_HEIGHT * scale};
 
     BeginDrawing();
     ClearBackground(BLACK);
