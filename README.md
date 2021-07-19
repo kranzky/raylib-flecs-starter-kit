@@ -3,7 +3,7 @@
 This is a template repository that makes it easy to get up-and-running with
 Raylib and Flecs. Builds for Windows, MacOS and Linux are available here:
 
-https://github.com/kranzky/raylib-flecs-starter-kit
+https://kranzky.itch.io/raylib-flecs-starter-kit
 
 ## Building
 
