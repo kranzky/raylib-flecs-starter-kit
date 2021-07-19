@@ -1,21 +1,9 @@
 # Raylib+Flecs Starter Kit
 
-## Configuration
+This is a template repository that makes it easy to get up-and-running with
+Raylib and Flecs. Builds for Windows, MacOS and Linux are available here:
 
-Change the name of the game from "starterkit" to your own in these files:
-
-```
-.gitignore
-.vscode/launch.json
-.vscode/tasks.json
-Makefile
-src/managers/game.c
-linux/launch
-mac/.itch.toml
-mac/StarterKit.app/Contents/Info.plist
-mac/StarterKit.app/Contents/MacOS/launch
-win/.itch.toml
-```
+https://github.com/kranzky/raylib-flecs-starter-kit
 
 ## Building
 
@@ -41,6 +29,23 @@ You can release your project to itch.io as follows:
 On Windows, use `mingw32-make`. On Linux, you will release just the 32-bit or
 64-bit executable, depending on your architecture. For maximum compatibility,
 manually package up a release that supports both architectures.
+
+## Configuration
+
+Optionally change the name from "starterkit" to your own in these files:
+
+```
+.gitignore
+.vscode/launch.json
+.vscode/tasks.json
+Makefile
+src/managers/game.c
+linux/launch
+mac/.itch.toml
+mac/StarterKit.app/Contents/Info.plist
+mac/StarterKit.app/Contents/MacOS/launch
+win/.itch.toml
+```
 
 ## Copyright
 
