@@ -1,3 +1,5 @@
+#include "../defines.h"
+
 #include "../components/label.h"
 #include "../components/spatial.h"
 #include "../components/tinted.h"

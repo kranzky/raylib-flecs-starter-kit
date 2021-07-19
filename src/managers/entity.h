@@ -15,6 +15,6 @@ ECS_TYPE_DECLARE(LabelType);
 void entity_manager_init(ecs_world_t *world);
 
 ecs_entity_t entity_manager_spawn_scene(SceneName id);
-ecs_entity_t entity_manager_spawn_label(FontName id, const char *message, TextAlignment align, TextVerticalAlignment valign, float size, Vector2 position, Color tint);
+ecs_entity_t entity_manager_spawn_label(ecs_entity_t parent, FontName id, const char *message, TextAlignment align, TextVerticalAlignment valign, float size, Vector2 position, Color tint);
 
 #endif

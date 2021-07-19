@@ -11,23 +11,24 @@
 
 //==============================================================================
 
-// TODO: jump table
+typedef void (*voidSceneFunction)(ecs_world_t *world, const Scene *scene, ecs_entity_t entity);
+typedef bool (*boolSceneFunction)(ecs_world_t *world, const Scene *scene, ecs_entity_t entity);
+
+typedef struct JumpTarget
+{
+  voidSceneFunction init;
+  boolSceneFunction update;
+  voidSceneFunction fini;
+} JumpTarget;
+
+JumpTarget _targets[] = {[SCENE_TITLE] = {.init = init_title, .update = update_title, .fini = fini_title},
+                         [SCENE_SPLASH] = {.init = init_splash, .update = update_splash, .fini = fini_splash}};
 
 //==============================================================================
 
 static inline void _init(ecs_world_t *world, Scene *scene, ecs_entity_t entity)
 {
-  switch (scene->id)
-  {
-  case SCENE_SPLASH:
-    init_splash(world, scene, entity);
-    break;
-  case SCENE_TITLE:
-    init_title(world, scene, entity);
-    break;
-  default:
-    break;
-  }
+  _targets[scene->id].init(world, scene, entity);
   scene->state = SCENE_STATE_RUNNING;
 }
 
@@ -35,19 +36,7 @@ static inline void _init(ecs_world_t *world, Scene *scene, ecs_entity_t entity)
 
 static inline void _update(ecs_world_t *world, Scene *scene, ecs_entity_t entity)
 {
-  bool status = false;
-  switch (scene->id)
-  {
-  case SCENE_SPLASH:
-    status = update_splash(world, scene, entity);
-    break;
-  case SCENE_TITLE:
-    status = update_title(world, scene, entity);
-    break;
-  default:
-    break;
-  }
-  if (!status)
+  if (!_targets[scene->id].update(world, scene, entity))
     scene->state = SCENE_STATE_STOPPING;
 }
 
@@ -55,17 +44,7 @@ static inline void _update(ecs_world_t *world, Scene *scene, ecs_entity_t entity
 
 static inline void _fini(ecs_world_t *world, Scene *scene, ecs_entity_t entity)
 {
-  switch (scene->id)
-  {
-  case SCENE_SPLASH:
-    fini_splash(world, scene, entity);
-    break;
-  case SCENE_TITLE:
-    fini_title(world, scene, entity);
-    break;
-  default:
-    break;
-  }
+  _targets[scene->id].fini(world, scene, entity);
   ecs_delete(world, entity);
 }
 

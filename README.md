@@ -1,65 +1,46 @@
 # Raylib+Flecs Starter Kit
 
+## Configuration
+
+Change the name of the game from "starterkit" to your own in these files:
+
+```
+.gitignore
+.vscode/launch.json
+.vscode/tasks.json
+Makefile
+src/managers/game.c
+linux/launch
+mac/.itch.toml
+mac/StarterKit.app/Contents/Info.plist
+mac/StarterKit.app/Contents/MacOS/launch
+win/.itch.toml
+```
+
 ## Building
 
+First you need to build the raylib library in `vendor/raylib` as follows:
+
 ```
-make RAYLIB_SRC_PATH=.
+> make clean
+> make RAYLIB_SRC_PATH=. MACOSX_DEPLOYMENT_TARGET=10.9 PLATFORM=PLATFORM_DESKTOP
 ```
 
-* add butler deployment to makefile
-
+You will then be able to run the project in VS Code.
 
 ## Releasing
 
-### Mac
+You can release your project to itch.io as follows:
 
 ```
-> cd ../raylib/src
-> git checkout 3.7.0
-> export MACOSX_DEPLOYMENT_TARGET=10.9
-> make
-> cd ../..flecs
-> git checkout v2.3.2
-> cd ../cJSON
-> git checkout v1.7.14
-> cd ../blattix
+> make BUILD=RELEASE clean
 > make BUILD=RELEASE
-> butler validate mac
-> butler push mac thepunkcollective/blattix:mac-beta --userversion-file mac/Blattix.app/Contents/MacOS/res/VERSION
+> make BUILD=RELEASE butler ITCHUSER=youruser ITCHGAME=yourgame
 ```
 
-### Win
-
-```
-> cd ../raylib/src
-> edit config.h to enable SUPPORT_BUSY_WAIT_LOOP
-> mingw32-make PLATFORM=PLATFORM_DESKTOP
-> cd ../../flecs
-> git checkout v2.3.2
-> cd ../blattix
-> make BUILD=RELEASE
-> butler validate win
-> butler push win thepunkcollective/blattix:win-beta --userversion-file win/res/VERSION
-```
-
-### Linux
-
-```
-> (do this on the 32-bit and 64-bit VMs)
-> cd ../raylib/src
-> edit c99 to gnu99 and enable SUPPORT_BUSY_WAIT_LOOP
-> mingw32-make PLATFORM=PLATFORM_DESKTOP
-> cd ../../flecs
-> git checkout v2.3.2
-> cd ../blattix
-> make BUILD=RELEASE
-> (do this on the 32-bit VM)
-> cp linux/blattix32 ~/windows
-> (do this on the 64-bit VM)
-> mv ~/windows/blattix32 linux
-> butler validate linux
-> butler push linux thepunkcollective/blattix:linux-beta --userversion-file linux/res/VERSION
-```
+On Windows, use `mingw32-make`. On Linux, you will release just the 32-bit or
+64-bit executable, depending on your architecture. For maximum compatibility,
+manually package up a release that supports both architectures.
 
 ## Copyright
 

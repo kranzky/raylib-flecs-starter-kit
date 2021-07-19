@@ -288,7 +288,7 @@ CFLAGS += -Wall -D_DEFAULT_SOURCE -Wno-missing-braces -Werror=pointer-arith -fno
 ifeq ($(PLATFORM), PLATFORM_WEB)
     CFLAGS += -std=gnu99
 else
-    CFLAGS += -std=c99
+    CFLAGS += -std=gnu99
 endif
 
 ifeq ($(PLATFORM_OS), LINUX)

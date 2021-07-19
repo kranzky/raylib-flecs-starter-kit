@@ -1,6 +1,7 @@
 # vim: noexpandtab filetype=make
 
 .PHONY: clean 
+.PHONY: butler 
 
 TARGET = starterkit
 RELEASE = alpha
@@ -33,7 +34,9 @@ endif
 
 # architecture-specific settings
 ARCH ?= MAC
+ITCHARCH ?= mac
 ifeq ($(ARCH),MAC)
+  ITCHARCH = mac
   CFLAGS += -DOSX -mmacosx-version-min=10.9
   LFLAGS += -framework CoreVideo -framework IOKit -framework Cocoa
   LFLAGS += -framework GLUT -framework OpenGL
@@ -43,6 +46,7 @@ ifeq ($(ARCH),MAC)
   endif
 endif
 ifeq ($(ARCH),WIN)
+  ITCHARCH = win
   CFLAGS += -DWINDOWS
   LFLAGS += -static -lopengl32 -lgdi32
   TARGET = starterkit.exe
@@ -52,6 +56,7 @@ ifeq ($(ARCH),WIN)
   endif
 endif
 ifeq ($(ARCH),LINUX)
+  ITCHARCH = linux
   CFLAGS += -DLINUX
   LFLAGS += -lGL -lm -lpthread -ldl -lrt -lX11
   ifeq ($(BUILD),RELEASE)
@@ -100,6 +105,9 @@ $(OBJDIR)/%.o : $(SRCDIR)/%.c $(DEPDIR)/%.d
 
 $(DEPDIR)/%.d: ;
 .PRECIOUS: $(DEPDIR)/%.d
+
+butler:
+	butler push $(ITCHARCH) $(ITCHUSER)/$(ITCHGAME):$(ITCHARCH)-$(RELEASE) --userversion-file $(RESDIR)/VERSION
 
 clean:
 	$(rm) $(wildcard $(DEPDIR)/**/*.d)

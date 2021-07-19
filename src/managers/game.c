@@ -62,7 +62,6 @@ static inline void _init_raylib()
 
   SetConfigFlags(flags);
   SetTargetFPS(60);
-  SetExitKey(0);
 
   InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "StarterKit");
   InitAudioDevice();
@@ -118,7 +117,11 @@ void game_manager_loop(void)
 
   while (running)
   {
-    running = ecs_progress(_world, GetFrameTime());
+    BeginTextureMode(*playfield);
+    ClearBackground(BLACK);
+    EndTextureMode();
+
+    running = ecs_progress(_world, GetFrameTime()) && !WindowShouldClose();
 
     int window_width = GetScreenWidth();
     int window_height = GetScreenHeight();
