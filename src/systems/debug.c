@@ -13,6 +13,34 @@
 
 //==============================================================================
 
+static const char *_scene_name[] = {
+    [SCENE_SPLASH] = "Splash screen",
+    [SCENE_TITLE] = "Main menu",
+    [SCENE_LEVEL] = "Game level",
+    [SCENE_GAME_OVER] = "Game over"};
+
+static const char *_scene_state[] = {
+    [SCENE_STATE_STARTING] = "starting",
+    [SCENE_STATE_RUNNING] = "running",
+    [SCENE_STATE_STOPPING] = "stopping"};
+
+static char _buffer[4096] = {0};
+static char *_pointer = _buffer;
+
+//==============================================================================
+
+void _debug_text(const char *format, ...)
+{
+  va_list argptr;
+  va_start(argptr, format);
+  vsprintf(_pointer, format, argptr);
+  va_end(argptr);
+  entity_manager_spawn_debug(_pointer);
+  _pointer += strlen(_pointer) + 1;
+}
+
+//------------------------------------------------------------------------------
+
 void debug_input(ecs_iter_t *it)
 {
   Input *input = ecs_column(it, Input, 1);
@@ -21,23 +49,32 @@ void debug_input(ecs_iter_t *it)
     debug->enabled = !debug->enabled;
   if (!debug->enabled)
     return;
-  entity_manager_spawn_debug(debug->version);
-  entity_manager_spawn_debug("hello");
-  entity_manager_spawn_debug("world");
+  _debug_text("Buttons: %s %s %s", input->select ? "SELECT" : "select", input->fire ? "FIRE" : "fire", input->quit ? "QUIT" : "quit");
+  _debug_text("Stick: %3.2f, %3.2f", input->joystick.x, input->joystick.y);
+  _debug_text("Mouse: %3.2f, %3.2f", input->pointer.x, input->pointer.y);
 }
 
 //------------------------------------------------------------------------------
 
 void debug_scene(ecs_iter_t *it)
 {
+  Scene *scene = ecs_column(it, Scene, 1);
+  Debug *debug = ecs_column(it, Debug, 2);
+  if (!debug->enabled)
+    return;
+  for (int i = 0; i < it->count; ++i)
+  {
+    _debug_text("%s is %s.", _scene_name[scene[i].id], _scene_state[scene[i].state]);
+  }
 }
 
 //------------------------------------------------------------------------------
 
 void debug_render(ecs_iter_t *it)
 {
-  Debug *debug = ecs_column(it, Debug, 1);
-  Label *label = ecs_column(it, Label, 2);
+  Label *label = ecs_column(it, Label, 1);
+  Debug *debug = ecs_column(it, Debug, 2);
+  _pointer = _buffer;
   if (!debug->enabled)
     return;
   BeginTextureMode(*texture_manager_playfield());
@@ -55,7 +92,6 @@ void debug_render(ecs_iter_t *it)
   underlay.width += 10;
   underlay.height += 10;
   DrawRectangleRec(underlay, (Color){0, 0, 0, 128});
-  // TODO: draw underlay rectangle
   Vector2 position = {10, 10};
   for (int i = 0; i < it->count; ++i)
   {

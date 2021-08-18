@@ -32,6 +32,6 @@ void system_manager_init(ecs_world_t *world)
 #ifdef DEBUG
   ECS_SYSTEM(world, debug_input, EcsPostUpdate, [in] $Input, [out] $Debug);
   ECS_SYSTEM(world, debug_scene, EcsPostUpdate, [in] Scene, [out] $Debug);
-  ECS_SYSTEM(world, debug_render, EcsOnStore, [in] $Debug, [in] Label, DebugTag);
+  ECS_SYSTEM(world, debug_render, EcsOnStore, [in] Label, [in] $Debug, DebugTag);
 #endif
 }
