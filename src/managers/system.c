@@ -30,8 +30,8 @@ void system_manager_init(ecs_world_t *world)
   ECS_SYSTEM(world, render_labels, EcsOnStore, [in] Label, [inout] Spatial, [in] Tinted);
 
 #ifdef DEBUG
-  ECS_SYSTEM(world, debug_input, EcsPostUpdate, [in] $Input, [out] $Debug);
-  ECS_SYSTEM(world, debug_scene, EcsPostUpdate, [in] Scene, [out] $Debug);
+  ECS_SYSTEM(world, debug_input, EcsPostUpdate, [in] $Input, [out] $Debug, [out] :*);
+  ECS_SYSTEM(world, debug_scene, EcsPostUpdate, [in] Scene, [out] $Debug, [out] :*);
   ECS_SYSTEM(world, debug_render, EcsOnStore, [in] Label, [in] $Debug, DebugTag);
 #endif
 }
