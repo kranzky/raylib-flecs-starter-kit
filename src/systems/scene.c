@@ -1,13 +1,12 @@
 #include <raylib.h>
 #include <raymath.h>
-#include <flecs.h>
 
 #include "../defines.h"
 
-#include "scene.h"
-
 #include "../scenes/splash.h"
 #include "../scenes/title.h"
+
+#include "scene.h"
 
 //==============================================================================
 

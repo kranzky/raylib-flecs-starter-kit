@@ -6,6 +6,8 @@
 
 #include "../managers/texture.h"
 
+#include "render.h"
+
 //==============================================================================
 
 void render_labels(ecs_iter_t *it)

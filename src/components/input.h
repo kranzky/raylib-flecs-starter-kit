@@ -7,6 +7,7 @@
 typedef struct Input
 {
   bool quit;
+  bool select;
   bool toggle_pause;
   bool toggle_debug;
   bool toggle_fullscreen;

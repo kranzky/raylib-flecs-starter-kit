@@ -48,6 +48,6 @@ static void _fini(ecs_world_t *world, void *context)
 void settings_manager_init(ecs_world_t *world)
 {
   ecs_atfini(world, _fini, NULL);
-  ecs_singleton_set(world, Settings, {.music = true, .fullscreen = false});
+  ecs_singleton_set(world, Settings, {.music = true, .fullscreen = false, .gamepad = -1});
   _load_settings(world);
 }

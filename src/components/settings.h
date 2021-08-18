@@ -7,6 +7,7 @@ typedef struct Settings
 {
   bool music;
   bool fullscreen;
+  int gamepad;
 } Settings;
 
 ECS_COMPONENT_DECLARE(Settings);
