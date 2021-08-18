@@ -4,7 +4,8 @@
     "stack": "c",
     "random": "c",
     "__locale": "c",
-    "ios": "c"
+    "ios": "c",
+    "entity.h": "c"
   },
   "C_Cpp.default.includePath": [],
   "files.eol": "\n"

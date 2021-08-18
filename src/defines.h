@@ -12,4 +12,6 @@
 
 #define MAX_SHEEP 10
 
+#define DEBUG_SIZE 20
+
 #endif

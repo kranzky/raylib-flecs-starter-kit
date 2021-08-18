@@ -33,8 +33,12 @@ static inline void _add_parent(ecs_entity_t child, ecs_entity_t parent)
 void entity_manager_init(ecs_world_t *world)
 {
   ecs_atfini(world, _fini, NULL);
+
   ECS_TYPE_DEFINE(world, SceneType, Scene);
   ECS_TYPE_DEFINE(world, LabelType, Label, Spatial, Tinted);
+
+  ECS_TAG_DEFINE(world, DebugTag);
+
   _world = world;
 }
 
@@ -57,5 +61,15 @@ ecs_entity_t entity_manager_spawn_label(ecs_entity_t parent, FontName id, const 
   ecs_set(_world, entity, Spatial, {.position = position});
   ecs_set(_world, entity, Tinted, {.tint = tint});
   _add_parent(entity, parent);
+  return entity;
+}
+
+//------------------------------------------------------------------------------
+
+ecs_entity_t entity_manager_spawn_debug(const char *text)
+{
+  ecs_entity_t entity = ecs_new(_world, 0);
+  ecs_set(_world, entity, Label, {.text = text});
+  ecs_add(_world, entity, DebugTag);
   return entity;
 }

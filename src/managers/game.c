@@ -130,7 +130,7 @@ void game_manager_loop(void)
   while (running)
   {
     BeginTextureMode(*playfield);
-    ClearBackground(BLACK);
+    ClearBackground(BLUE);
     EndTextureMode();
 
     running = ecs_progress(_world, GetFrameTime());
