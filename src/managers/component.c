@@ -2,20 +2,16 @@
 #include "../components/spatial.h"
 #include "../components/label.h"
 #include "../components/tinted.h"
+#include "../components/input.h"
+#include "../components/settings.h"
+#include "../components/debug.h"
 
 #include "component.h"
 
 //==============================================================================
 
-static char *_version = "DEBUG BUILD";
-
-//==============================================================================
-
 static void _fini(ecs_world_t *world, void *context)
 {
-#ifdef RELEASE
-  UnloadFileText((unsigned char *)_version);
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -27,8 +23,7 @@ void component_manager_init(ecs_world_t *world)
   ECS_COMPONENT_DEFINE(world, Spatial);
   ECS_COMPONENT_DEFINE(world, Label);
   ECS_COMPONENT_DEFINE(world, Tinted);
-
-#ifdef RELEASE
-  _version = LoadFileText("./res/VERSION");
-#endif
+  ECS_COMPONENT_DEFINE(world, Input);
+  ECS_COMPONENT_DEFINE(world, Settings);
+  ECS_COMPONENT_DEFINE(world, Debug);
 }

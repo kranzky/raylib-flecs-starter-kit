@@ -12,6 +12,9 @@
 #include "component.h"
 #include "entity.h"
 #include "system.h"
+#include "settings.h"
+#include "debug.h"
+#include "input.h"
 
 #include "game.h"
 
@@ -92,6 +95,9 @@ static inline void _init_managers()
   data_manager_init(_world);
   component_manager_init(_world);
   entity_manager_init(_world);
+  debug_manager_init(_world);
+  settings_manager_init(_world);
+  input_manager_init(_world);
   system_manager_init(_world);
 }
 
