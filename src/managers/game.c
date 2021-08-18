@@ -151,7 +151,7 @@ void game_manager_loop(void)
         (float)RASTER_HEIGHT * scale};
 
     BeginDrawing();
-    ClearBackground(BLACK);
+    ClearBackground(DARKGRAY);
     DrawTexturePro(playfield->texture, src, dst, (Vector2){0}, 0.0f, WHITE);
     EndDrawing();
   }

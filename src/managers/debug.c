@@ -21,9 +21,14 @@ void debug_manager_init(ecs_world_t *world)
 {
   ecs_atfini(world, _fini, NULL);
 
+  bool enabled = false;
+
 #ifdef RELEASE
   _version = LoadFileText("./res/VERSION");
 #endif
+#ifdef DEBUG
+  enabled = true;
+#endif
 
-  ecs_singleton_set(world, Debug, {.version = _version});
+  ecs_singleton_set(world, Debug, {.version = _version, .enabled = enabled});
 }
