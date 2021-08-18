@@ -12,9 +12,7 @@ static RenderTexture2D _playfield;
 static void _fini(ecs_world_t *world, void *context)
 {
   for (int i = 0; i < MAX_TEXTURES; ++i)
-  {
     UnloadTexture(_textures[i]);
-  }
   UnloadRenderTexture(_playfield);
 }
 
@@ -51,4 +49,3 @@ RenderTexture2D *texture_manager_playfield()
 {
   return &_playfield;
 }
-

@@ -9,9 +9,7 @@ static Font _font[MAX_FONTS];
 static void _fini(ecs_world_t *world, void *context)
 {
   for (int i = 0; i < MAX_FONTS; ++i)
-  {
     UnloadFont(_font[i]);
-  }
 }
 
 //------------------------------------------------------------------------------

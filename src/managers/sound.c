@@ -11,9 +11,7 @@ static Sound _sounds[MAX_SOUNDS];
 static void _fini(ecs_world_t *world, void *context)
 {
   for (int i = 0; i < MAX_SOUNDS; ++i)
-  {
     UnloadSound(_sounds[i]);
-  }
 }
 
 //------------------------------------------------------------------------------

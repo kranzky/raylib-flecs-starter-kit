@@ -9,9 +9,7 @@ static Music _music[MAX_MUSIC];
 static void _fini(ecs_world_t *world, void *context)
 {
   for (int i = 0; i < MAX_MUSIC; ++i)
-  {
     UnloadMusicStream(_music[i]);
-  }
 }
 
 //------------------------------------------------------------------------------

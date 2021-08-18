@@ -113,7 +113,12 @@ void game_manager_loop(void)
   RenderTexture2D *playfield = texture_manager_playfield();
   Rectangle src = {0.0f, 0.0f, (float)RASTER_WIDTH, (float)-RASTER_HEIGHT};
 
+#ifdef RELEASE
   entity_manager_spawn_scene(SCENE_SPLASH);
+#endif
+#ifdef DEBUG
+  entity_manager_spawn_scene(SCENE_TITLE);
+#endif
 
   while (running)
   {

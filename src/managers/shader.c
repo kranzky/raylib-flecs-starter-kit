@@ -9,9 +9,7 @@ static Shader _shaders[MAX_SHADERS];
 static void _fini(ecs_world_t *world, void *context)
 {
   for (int i = 0; i < MAX_SHADERS; ++i)
-  {
     UnloadShader(_shaders[i]);
-  }
 }
 
 //------------------------------------------------------------------------------
