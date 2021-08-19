@@ -34,6 +34,7 @@ static inline void _init(ecs_world_t *world, Scene *scene, ecs_entity_t entity)
 {
   _targets[scene->id].init(world, scene, entity);
   scene->state = SCENE_STATE_RUNNING;
+  // SPAWN black overlay which will fade out over time
 }
 
 //------------------------------------------------------------------------------
@@ -48,6 +49,8 @@ static inline void _update(ecs_world_t *world, Scene *scene, const Input *input,
 
 static inline void _fini(ecs_world_t *world, Scene *scene, ecs_entity_t entity)
 {
+  // SPAWN black overlay which will fade in over time
+  // delete entities and call fini once it's done
   _targets[scene->id].fini(world, scene, entity);
   ecs_delete(world, entity);
 }
