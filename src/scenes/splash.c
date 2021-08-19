@@ -14,9 +14,9 @@ void init_splash(ecs_world_t *world, const Scene *scene, ecs_entity_t parent)
 
 //------------------------------------------------------------------------------
 
-bool update_splash(ecs_world_t *world, const Scene *scene, ecs_entity_t parent)
+bool update_splash(ecs_world_t *world, const Scene *scene, const Input *input, const Settings *settings, ecs_entity_t parent)
 {
-  return scene->time < 3;
+  return scene->time < 3 && !input->select && !input->quit;
 }
 
 //------------------------------------------------------------------------------
