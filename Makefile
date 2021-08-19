@@ -65,7 +65,7 @@ ifeq ($(ARCH),LINUX)
     TEST = $(shell uname -m)
     TARGET = starterkit32
     ifeq ($(TEST),x86_64)
-      TARGET = starterkitx64
+      TARGET = starterkit64
     endif
   endif
 endif
