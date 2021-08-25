@@ -123,10 +123,10 @@ void game_manager_loop(void)
   SetWindowIcon(GetTextureData(*texture_manager_get(TEXTURE_SHIP)));
 
 #ifdef RELEASE
-  entity_manager_spawn_scene(SCENE_SPLASH);
+  entity_manager_spawn_scene(_world, SCENE_SPLASH);
 #endif
 #ifdef DEBUG
-  entity_manager_spawn_scene(SCENE_TITLE);
+  entity_manager_spawn_scene(_world, SCENE_TITLE);
 #endif
 
   while (running)

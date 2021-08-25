@@ -13,7 +13,7 @@ static bool _quit = false;
 void init_title(ecs_world_t *world, const Scene *scene, ecs_entity_t parent)
 {
   Vector2 position = {RASTER_WIDTH * 0.5, RASTER_HEIGHT * 0.5};
-  entity_manager_spawn_label(parent, FONT_CLOVER, "Title Screen", ALIGN_CENTRE, VALIGN_MIDDLE, 50, position, ORANGE);
+  entity_manager_spawn_label(world, parent, FONT_CLOVER, "Title Screen", ALIGN_CENTRE, VALIGN_MIDDLE, 50, position, ORANGE);
   _quit = false;
 }
 
@@ -34,5 +34,5 @@ void fini_title(ecs_world_t *world, const Scene *scene, ecs_entity_t parent)
   if (_quit)
     ecs_quit(world);
   else
-    entity_manager_spawn_scene(SCENE_LEVEL);
+    entity_manager_spawn_scene(world, SCENE_LEVEL);
 }

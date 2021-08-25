@@ -29,13 +29,13 @@ static char *_pointer = _buffer;
 
 //==============================================================================
 
-void _debug_text(const char *format, ...)
+void _debug_text(ecs_world_t *world, const char *format, ...)
 {
   va_list argptr;
   va_start(argptr, format);
   vsprintf(_pointer, format, argptr);
   va_end(argptr);
-  entity_manager_spawn_debug(_pointer);
+  entity_manager_spawn_debug(world, _pointer);
   _pointer += strlen(_pointer) + 1;
 }
 
@@ -49,9 +49,9 @@ void debug_input(ecs_iter_t *it)
     debug->enabled = !debug->enabled;
   if (!debug->enabled)
     return;
-  _debug_text("Buttons: %s %s %s", input->select ? "SELECT" : "select", input->fire ? "FIRE" : "fire", input->quit ? "QUIT" : "quit");
-  _debug_text("Stick: %3.2f, %3.2f", input->joystick.x, input->joystick.y);
-  _debug_text("Mouse: %3.2f, %3.2f", input->pointer.x, input->pointer.y);
+  _debug_text(it->world, "Buttons: %s %s %s", input->select ? "SELECT" : "select", input->fire ? "FIRE" : "fire", input->quit ? "QUIT" : "quit");
+  _debug_text(it->world, "Stick: %3.2f, %3.2f", input->joystick.x, input->joystick.y);
+  _debug_text(it->world, "Mouse: %3.2f, %3.2f", input->pointer.x, input->pointer.y);
 }
 
 //------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ void debug_scene(ecs_iter_t *it)
     return;
   for (int i = 0; i < it->count; ++i)
   {
-    _debug_text("%s is %s.", _scene_name[scene[i].id], _scene_state[scene[i].state]);
+    _debug_text(it->world, "%s is %s.", _scene_name[scene[i].id], _scene_state[scene[i].state]);
   }
 }
 

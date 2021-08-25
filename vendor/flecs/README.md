@@ -6,15 +6,23 @@
 [![Try online](https://img.shields.io/badge/try-online-brightgreen)](https://godbolt.org/z/bs11T3)
 [![Documentation](https://img.shields.io/badge/docs-docsforge-blue)](http://flecs.docsforge.com/)
 
-Flecs is a fast and lightweight Entity Component System with a focus on high performance game development ([join the Discord!](https://discord.gg/MRSAZqb)). Highlights of the framework are:
+Flecs is a fast and lightweight Entity Component System with a focus on high performance game development and usability ([join the Discord!](https://discord.gg/MRSAZqb)). The highlights of the framework are:
 
-- Fast to compile & integrate in any project with zero-dependency core that is written entirely in C99
-- Provides (SoA) access to raw component arrays for optimal cache efficiency and vectorization
-- Archetype-storage with unique graph-based design enables high performance entity mutations 
-- Flexible API primitives allow for efficient implementation of prefabs, runtime tags and entity graphs
-- Supports advanced queries that are entirely evaluated offline to eliminate searching from the main loop
-- Lockless threading design allows for efficient execution of systems on multiple threads
-- A dashboard module for tracking application metrics (see below for repository link):
+- Zero dependency C99 core, modern type safe C++11 API, no dependencies on STL types
+- Batched iteration with direct access to component arrays
+- SoA/Archetype storage for efficient CPU caching & vectorization
+- Automatic component registration across binaries
+- Runtime tags
+- Hierarchies
+- Prefabs
+- Relationships graphs & graph queries
+- Thread safe, lockless API
+- Systems that are ran manually, every frame or at a time/rate interval
+- Queries that can be iterated from free functions
+- Modules for organizing components & systems
+- Builtin statistics & introspection
+- Modular core with compile-time disabling of optional features
+- A dashboard module for visualizing statistics:
 
 <img width="942" alt="Screen Shot 2020-12-02 at 1 28 04 AM" src="https://user-images.githubusercontent.com/9919222/100856510-5eebe000-3440-11eb-908e-f4844c335f37.png">
 
@@ -26,80 +34,136 @@ ECS (Entity Component System) is a design pattern used in games and simulations 
 - Has _systems_ which are behavior matched with entities based on their components
 
 ## Documentation
-- [Quickstart](docs/Quickstart.md)
-- [FAQ](docs/FAQ.md)
-- [Manual](docs/Manual.md)
-- [Migration guide](docs/MigrationGuide.md)
+If you are still learning Flecs, these resources are a good start:
+- [Flecs not for dummies (presentation)](https://github.com/SanderMertens/flecs_not_for_dummies)
+- [Quickstart](docs/Quickstart.md) ([docsforge](https://flecs.docsforge.com/master/quickstart/))
+- [Designing with Flecs](docs/DesignWithFlecs.md) ([docsforge](https://flecs.docsforge.com/master/designing-with-flecs/))
+
+The FAQ is where some of the most asked questions are listed:
+- [FAQ](docs/FAQ.md) ([docsforge](https://flecs.docsforge.com/master/faq/))
+
+The manual and examples come in handy if you're looking for information on specific features:
+- [Manual](docs/Manual.md) ([docsforge](https://flecs.docsforge.com/master/manual/))
 - [C examples](examples/c)
 - [C++ examples](examples/cpp)
 
-See [Docsforge](http://flecs.docsforge.com/) for a more readable version of the documentation.
+If you are migrating from Flecs v1 to v2, check the migration guide:
+- [Migration guide](docs/MigrationGuide.md) ([docsforge](https://flecs.docsforge.com/master/migrationguide/))
 
-## Example
+Here is some awesome content provided by the community (thanks everyone! :heart:):
+- [Bringing Flecs to UE4](https://bebylon.dev/blog/ecs-flecs-ue4/)
+- [Flecs + UE4 is magic](https://jtferson.github.io/blog/flecs_and_unreal/)
+- [Quickstart with Flecs in UE4](https://jtferson.github.io/blog/quickstart_with_flecs_in_unreal_part_1/) 
+- [Automatic component registration in UE4](https://jtferson.github.io/blog/automatic_flecs_component_registration_in_unreal/)
+- [Building a space battle with Flecs in UE4](https://twitter.com/ajmmertens/status/1361070033334456320) 
+- [Flecs + SDL + Web ASM example](https://github.com/HeatXD/flecs_web_demo) ([live demo](https://heatxd.github.io/flecs_web_demo/))
+- [Flecs + gunslinger example](https://github.com/MrFrenik/gs_examples/blob/main/18_flecs/source/main.c)
+
+## Examples
 This is a simple flecs example in the C99 API:
 
 ```c
 typedef struct {
-  float x;
-  float y;
+  float x, y;
 } Position, Velocity;
 
 void Move(ecs_iter_t *it) {
-  Position *p = ecs_column(it, Position, 1);
-  Velocity *v = ecs_column(it, Velocity, 2);
+  Position *p = ecs_term(it, Position, 1);
+  Velocity *v = ecs_term(it, Velocity, 2);
   
-  for (int i = 0; i < it.count; i ++) {
-    p[i].x += v[i].x * it->delta_time;
-    p[i].y += v[i].y * it->delta_time;
-    printf("Entity %s moved!\n", ecs_get_name(it->world, it->entities[i]));
+  for (int i = 0; i < it->count; i ++) {
+    p[i].x += v[i].x;
+    p[i].y += v[i].y;
   }
 }
 
 int main(int argc, char *argv[]) {
   ecs_world_t *ecs = ecs_init();
-    
+
   ECS_COMPONENT(ecs, Position);
   ECS_COMPONENT(ecs, Velocity);
-    
-  ECS_SYSTEM(ecs, Move, EcsOnUpdate, Position, [in] Velocity);
-    
-  ecs_entity_t e = ecs_set(ecs, 0, EcsName, {"MyEntity"});
-  ecs_set(ecs, e, Position, {0, 0});
-  ecs_set(ecs, e, Velocity, {1, 1});
+
+  ECS_SYSTEM(ecs, Move, EcsOnUpdate, Position, Velocity);
+
+  ecs_entity_t e = ecs_new_id(ecs);
+  ecs_set(ecs, e, Position, {10, 20});
+  ecs_set(ecs, e, Velocity, {1, 2});
+
+  ecs_iter_t it = ecs_term_iter(world, &(ecs_term_t) { ecs_id(Position) });
+  while (ecs_term_next(&it)) {
+    Position *p = ecs_term(&it, Position, 1);
+    for (int i = 0; i < it.count; i ++) {
+      printf("{%f, %f}\n", p[i].x, p[i].y);
+    }
+  }
 
   while (ecs_progress(ecs, 0)) { }
 }
 ```
 
-Here is the same example but in the C++11 API:
+This is the same example in the C++11 API:
 
 ```c++
 struct Position {
-  float x;
-  float y;
+  float x, y;
 };
 
 struct Velocity {
-  float x;
-  float y;
+  float x, y;
 };
 
 int main(int argc, char *argv[]) {
   flecs::world ecs;
 
   ecs.system<Position, const Velocity>()
-    .each([](flecs::entity e, Position& p, const Velocity& v) {
-      p.x += v.x * e.delta_time();
-      p.y += v.y * e.delta_time();
-      std::cout << "Entity " << e.name() << " moved!" << std::endl;
+    .each([](Position& p, const Velocity& v) {
+      p.x += v.x;
+      p.y += v.y;
     });
 
-  ecs.entity("MyEntity")
-    .set<Position>({0, 0})
-    .set<Velocity>({1, 1});
+  auto e = ecs.entity()
+    .set([](Position& p, Velocity& v) {
+      p = {10, 20};
+      v = {1, 2};
+    });
 
+  ecs.each([](flecs::entity e, Position& p) {
+    std::cout << "{" << p.x << ", " << p.y << "}" << std::endl;
+  });
+    
   while (ecs.progress()) { }
 }
+```
+
+The first C example used macro's to emulate a type-safe layer on top of the
+underlying generic API. This example shows the C API without macro's:
+
+```c
+// Register the Position component
+ecs_entity_t pos = ecs_component_init(ecs, &(ecs_component_desc_t){
+  .entity.name = "Position",
+  .size = sizeof(Position), .alignment = ECS_ALIGNOF(Position)
+});
+
+// Register the Velocity component
+ecs_entity_t vel = ecs_component_init(ecs, &(ecs_component_desc_t){
+  .entity.name = "Velocity",
+  .size = sizeof(Velocity), .alignment = ECS_ALIGNOF(Velocity)
+});
+
+// Create the Move system
+ecs_system_init(ecs, &(ecs_system_desc_t){
+  .entity = { .name = "Move", .add = {EcsOnUpdate} },
+  .query.filter.terms = {{pos}, {vel, .inout = EcsIn}},
+  .callback = Move,
+});
+
+// Create entity
+ecs_entity_t e = ecs_new_id(ecs);
+
+// Set components
+ecs_set_id(ecs, e, pos, sizeof(Position), &(Position){10, 20});
+ecs_set_id(ecs, e, vel, sizeof(Velocity), &(Velocity){1, 2});
 ```
 
 ## Building
@@ -111,9 +175,10 @@ The Flecs source has a modular design which makes it easy to strip out code you 
 ## Software Quality
 To ensure stability of Flecs, the code is thoroughly tested on every commit:
 
-- 40.000 lines of test code, for 18.000 lines of framework code
-- More than 1600 testcases
+- More than 2400 testcases and 60.000 lines of test code
 - Over 90% code coverage
+- All tests run without memory leaks & memory corruption
+- All examples are compiled warning free
 
 The code is validated on the following platforms/compilers:
 
@@ -126,16 +191,16 @@ The code is validated on the following platforms/compilers:
   - gcc 10
   - clang 9
 
-The framework code and example code is compiled warning free on all platforms with the strictest warning settings. A sanitized build is ran on each commit to test for memory corruption and undefined behavior.
-
-Performance is tracked on a per-release basis, with the results for the latest release published here: https://github.com/SanderMertens/ecs_benchmark
-
 ### API stability
-API (programming interface) stability is guaranteed between minor releases, except in the rare case when an API is found to be an obvious source of confusion or bugs. When breaking changes do happen, the release notes will mention it with potential workarounds. 
+APIs are stable between minor and patch versions, but exceptions are made in these scenarios:
+- The design of an API prevents it from being used without introducing bugs
+- The design of an API is prone to misuse or confusing
 
-ABI (binary interface) stability is _not_ guaranteed inbetween versions, as non-opaque types and signatures may change at any point in time, as long as they don't break compilation of code that uses the public API. Headers under include/private are not part of the public API, and may introduce breaking changes at any point.
+The following parts of the API are not stable between patch/minor versions:
+- Anything in include/private
+- The ABI is not guaranteed to be stable, so a recompile of code is required after upgrading
 
-It is generally safe to use the master branch, which contains the latest version of the code. New features that are on master but are not yet part of a release may still see changes in their API. Once a feature is part of a release, its API will not change until at least the next major release.
+Functions may become deprecated before a major release. To build flecs without deprecated functions, exclude the `FLECS_DEPRECATED` addon. (see [custom builds](https://github.com/SanderMertens/flecs/blob/master/docs/Manual.md#custom-builds)).
 
 ## Modules
 The following modules are available in [flecs-hub](https://github.com/flecs-hub). Note that modules are mostly intended as example code, and their APIs may change at any point in time.
@@ -159,6 +224,10 @@ Module      | Description
 [flecs.systems.sdl2](https://github.com/flecs-hub/flecs-systems-sdl2) | SDL window creation & input management
 [flecs.systems.sokol](https://github.com/flecs-hub/flecs-systems-sokol) | Sokol-based renderer
 [flecs.systems.civetweb](https://github.com/flecs-hub/flecs-systems-civetweb) | A civetweb-based implementation of flecs.components.http
+
+## Language bindings
+- [Lua](https://github.com/flecs-hub/flecs-lua)
+- [Zig](https://github.com/prime31/zig-flecs)
 
 ## Useful Links
 - [ECS FAQ](https://github.com/SanderMertens/ecs-faq)

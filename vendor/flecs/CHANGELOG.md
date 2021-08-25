@@ -73,7 +73,7 @@ Thanks to the new Flecs sponsors ❤️ :
 - unused table_offset member is removed from iterator
 
 ## Deprecated features
-- ecs_entity() macro is now deprecated, use ecs_typeid()
+- ecs_entity() macro is now deprecated, use ecs_id()
 
 ## Features
 - Direct access addon, which provides fast access to underlying storage
@@ -118,13 +118,13 @@ Thanks to the new Flecs sponsors ❤️ :
 
 ## Bugfixes
 - Fixed issues with subqueries and query rematching
-- Corrected wrong return type of ecs_column_size (was ecs_entity_t, is now size_t)
+- Corrected wrong return type of ecs_term_size (was ecs_entity_t, is now size_t)
 - Add missing \0 when appending to application buffer with strbuf datastructure
 - Fixed crash when instantiating an empty prefab
 - Fixed issue with shared tags and queries using each() in the C++ API
 - Fixed issue with instantiating empty child table
 - Fixed issue with ecs_bulk_new and traits
-- Fixed issue when using ecs_entity_str with small buffers
+- Fixed issue when using ecs_id_str with small buffers
 - Fixed bug when adding trait to entity with switch
 - Fixed name conflicts in amalgamated source
 - Fixed path lookup in ecs_import
