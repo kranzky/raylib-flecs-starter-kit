@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include <flecs.h>
+#include <chipmunk.h>
 
 #include "../defines.h"
 
@@ -21,6 +22,7 @@
 //==============================================================================
 
 static ecs_world_t *_world = NULL;
+static cpSpace *_space = NULL;
 
 //==============================================================================
 
@@ -31,6 +33,13 @@ static void _fini(ecs_world_t *world, void *context)
     CloseAudioDevice();
   }
   CloseWindow();
+}
+
+//------------------------------------------------------------------------------
+
+static inline void _init_chipmunk()
+{
+  _space = cpSpaceNew();
 }
 
 //------------------------------------------------------------------------------
@@ -106,6 +115,7 @@ static inline void _init_managers()
 
 void game_manager_init(void)
 {
+  _init_chipmunk();
   _init_flecs();
   _init_raylib();
   _show_loading_screen();
@@ -135,6 +145,7 @@ void game_manager_loop(void)
     ClearBackground(BLUE);
     EndTextureMode();
 
+    cpSpaceStep(_space, GetFrameTime());
     running = ecs_progress(_world, GetFrameTime());
 
     int window_width = GetScreenWidth();
@@ -165,4 +176,6 @@ void game_manager_fini(void)
 {
   ecs_fini(_world);
   _world = NULL;
+  cpSpaceFree(_space);
+  _space = NULL;
 }

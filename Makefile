@@ -15,7 +15,7 @@ BINDIR = bin
 CC = gcc
 AR = ar
 CFLAGS = -Wall -Wextra -Wshadow -Wno-unused-parameter
-CFLAGS += -pedantic-errors -std=gnu11 -I./vendor/raylib -I./vendor/flecs -I./vendor/cJSON -I./vendor/Chipmunk2D
+CFLAGS += -pedantic-errors -std=gnu11 -I./vendor/raylib -I./vendor/flecs -I./vendor/cJSON -I./vendor/Chipmunk2D -I./vendor/Chipmunk2D/chipmunk
 
 # linker and default flags
 LINKER = $(CC) -o
