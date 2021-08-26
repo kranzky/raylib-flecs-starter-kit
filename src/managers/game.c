@@ -1,6 +1,7 @@
 #include <raylib.h>
 #include <flecs.h>
 #include <chipmunk.h>
+#include <tinyfiledialogs.h>
 
 #include "../defines.h"
 
@@ -76,7 +77,7 @@ static inline void _init_raylib()
   SetTargetFPS(60);
   SetExitKey(0);
 
-  InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "StarterKit");
+  InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_NAME);
   InitAudioDevice();
 }
 
@@ -120,6 +121,9 @@ void game_manager_init(void)
   _init_raylib();
   _show_loading_screen();
   _init_managers();
+#ifdef DEBUG
+  tinyfd_notifyPopup(GAME_NAME, "Ready to rock!", "info");
+#endif
 }
 
 //------------------------------------------------------------------------------

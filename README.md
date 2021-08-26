@@ -39,7 +39,7 @@ Optionally change the name from "starterkit" to your own in these files:
 .vscode/launch.json
 .vscode/tasks.json
 Makefile
-src/managers/game.c
+src/defines.h
 linux/launch
 mac/.itch.toml
 mac/StarterKit.app/Contents/Info.plist

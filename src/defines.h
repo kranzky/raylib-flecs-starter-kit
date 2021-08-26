@@ -1,6 +1,8 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
+#define GAME_NAME "StarterKit"
+
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
 
