@@ -1,3 +1,5 @@
+#include <tinyfiledialogs.h>
+
 #include "splash.h"
 
 #include "../managers/entity.h"
@@ -21,7 +23,7 @@ void init_title(ecs_world_t *world, const Scene *scene, ecs_entity_t parent)
 
 bool update_title(ecs_world_t *world, const Scene *scene, const Input *input, const Settings *settings, ecs_entity_t parent)
 {
-  _quit = input->quit;
+  _quit = input->quit && (tinyfd_messageBox(NULL, "Really quit?", "yesno", "warning", 1) == 1);
   if (_quit || input->select)
     return false;
   return true;

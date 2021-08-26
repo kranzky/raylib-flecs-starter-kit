@@ -1,10 +1,11 @@
 # vim: noexpandtab filetype=make
 
-.PHONY: game 
+.PHONY: starterkit 
 .PHONY: raylib 
 .PHONY: flecs 
 .PHONY: cjson 
 .PHONY: chipmunk 
+.PHONY: tinyfiledialogs 
 .PHONY: dist 
 .PHONY: clean 
 
@@ -20,7 +21,7 @@ BINDIR = bin
 CC = gcc
 AR = ar
 CFLAGS = -Wall -Wextra -Wshadow -Wno-unused-parameter
-CFLAGS += -pedantic-errors -std=gnu11 -I./vendor/raylib -I./vendor/flecs -I./vendor/cJSON -I./vendor/Chipmunk2D -I./vendor/Chipmunk2D/chipmunk
+CFLAGS += -pedantic-errors -std=gnu11
 
 # linker and default flags
 LINKER = $(CC) -o
@@ -91,13 +92,13 @@ $(shell mkdir -p $(DEPDIR) >/dev/null)
 
 $(OBJDIR)/%.o : $(SRCDIR)/%.c
 $(OBJDIR)/%.o : $(SRCDIR)/%.c $(DEPDIR)/%.d
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 	$(POSTCOMPILE)
 
 $(DEPDIR)/%.d: ;
 .PRECIOUS: $(DEPDIR)/%.d
 
-game: $(BINDIR)/$(TARGET)
+starterkit: $(BINDIR)/$(TARGET)
 
 raylib: ./vendor/raylib/libraylib.a
 RAYLIB_SOURCES := $(wildcard ./vendor/raylib/*.c)
@@ -106,6 +107,7 @@ RAYLIB_OBJECTS := $(RAYLIB_SOURCES:%.c=%.o)
 	make -C ./vendor/raylib RAYLIB_SRC_PATH=. MACOSX_DEPLOYMENT_TARGET=10.9 PLATFORM=PLATFORM_DESKTOP
 LFLAGS += -L./vendor/raylib -lraylib
 LIBS += ./vendor/raylib/libraylib.a
+INCLUDE += -I./vendor/raylib
 
 flecs: ./vendor/flecs/libflecs.a
 FLECS_SOURCES := $(wildcard ./vendor/flecs/*.c)
@@ -116,6 +118,7 @@ FLECS_OBJECTS := $(FLECS_SOURCES:%.c=%.o)
 	$(AR) rcs ./vendor/flecs/libflecs.a $(FLECS_OBJECTS)
 LFLAGS += -L./vendor/flecs -lflecs
 LIBS += ./vendor/flecs/libflecs.a
+INCLUDE += -I./vendor/flecs
 
 cjson: ./vendor/cJSON/libcjson.a
 CJSON_SOURCES := $(wildcard ./vendor/cJSON/*.c)
@@ -126,16 +129,29 @@ CJSON_OBJECTS := $(CJSON_SOURCES:%.c=%.o)
 	$(AR) rcs ./vendor/cJSON/libcjson.a $(CJSON_OBJECTS)
 LFLAGS += -L./vendor/cJSON -lcjson
 LIBS += ./vendor/cJSON/libcjson.a
+INCLUDE += -I./vendor/cJSON
 
 chipmunk: ./vendor/Chipmunk2D/libchipmunk.a
 CHIPMUNK_SOURCES := $(wildcard ./vendor/Chipmunk2D/*.c)
 CHIPMUNK_OBJECTS := $(CHIPMUNK_SOURCES:%.c=%.o)
 ./vendor/Chipmunk2D/%.o : ./vendor/Chipmunk2D/%.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -I./vendor/Chipmunk2D -c $< -o $@
 ./vendor/Chipmunk2D/libchipmunk.a: $(CHIPMUNK_OBJECTS)
 	$(AR) rcs ./vendor/Chipmunk2D/libchipmunk.a $(CHIPMUNK_OBJECTS)
 LFLAGS += -L./vendor/Chipmunk2D -lchipmunk
 LIBS += ./vendor/Chipmunk2D/libchipmunk.a
+INCLUDE += -I./vendor/Chipmunk2D/chipmunk
+
+tinyfiledialogs: ./vendor/tinyfiledialogs/libtinyfiledialogs.a
+TINYFILEDIALOGS_SOURCES := $(wildcard ./vendor/tinyfiledialogs/*.c)
+TINYFILEDIALOGS_OBJECTS := $(TINYFILEDIALOGS_SOURCES:%.c=%.o)
+./vendor/tinyfiledialogs/%.o : ./vendor/tinyfiledialogs/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+./vendor/tinyfiledialogs/libtinyfiledialogs.a : $(TINYFILEDIALOGS_OBJECTS)
+	$(AR) rcs ./vendor/tinyfiledialogs/libtinyfiledialogs.a $(TINYFILEDIALOGS_OBJECTS)
+LFLAGS += -L./vendor/tinyfiledialogs -ltinyfiledialogs
+LIBS += ./vendor/tinyfiledialogs/libtinyfiledialogs.a
+INCLUDE += -I./vendor/tinyfiledialogs
 
 $(BINDIR)/$(TARGET): $(OBJECTS) $(LIBS)
 	$(LINKER) $@ $(OBJECTS) $(LFLAGS)
@@ -165,10 +181,12 @@ clean:
 	$(rm) $(RAYLIB_OBJECTS)
 	$(rm) $(FLECS_OBJECTS)
 	$(rm) $(CJSON_OBJECTS)
+	$(rm) $(TINYFILEDIALOGS)
 	$(rm) ./vendor/Chipmunk2D/libchipmunk.a
 	$(rm) ./vendor/raylib/libraylib.a
 	$(rm) ./vendor/flecs/libflecs.a
 	$(rm) ./vendor/cJSON/libcjson.a
+	$(rm) ./vendor/tinyfiledialogs/libtinyfiledialogs.a
 	$(rm) $(BINDIR)/$(TARGET)
 ifeq ($(BUILD),RELEASE)
 	$(rm) -R $(RESDIR)
