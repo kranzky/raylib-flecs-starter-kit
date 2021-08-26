@@ -6,6 +6,7 @@
 .PHONY: cjson 
 .PHONY: chipmunk 
 .PHONY: tinyfiledialogs 
+.PHONY: nuklear 
 .PHONY: dist 
 .PHONY: clean 
 
@@ -153,6 +154,17 @@ LFLAGS += -L./vendor/tinyfiledialogs -ltinyfiledialogs
 LIBS += ./vendor/tinyfiledialogs/libtinyfiledialogs.a
 INCLUDE += -I./vendor/tinyfiledialogs
 
+nuklear: ./vendor/Nuklear/libnuklear.a
+NUKLEAR_SOURCES := $(wildcard ./vendor/Nuklear/*.c)
+NUKLEAR_OBJECTS := $(NUKLEAR_SOURCES:%.c=%.o)
+./vendor/Nuklear/%.o : ./vendor/Nuklear/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+./vendor/Nuklear/libnuklear.a : $(NUKLEAR_OBJECTS)
+	$(AR) rcs ./vendor/Nuklear/libnuklear.a $(NUKLEAR_OBJECTS)
+LFLAGS += -L./vendor/Nuklear -lnuklear
+LIBS += ./vendor/Nuklear/libnuklear.a
+INCLUDE += -I./vendor/Nuklear
+
 $(BINDIR)/$(TARGET): $(OBJECTS) $(LIBS)
 	$(LINKER) $@ $(OBJECTS) $(LFLAGS)
 ifeq ($(BUILD),RELEASE)
@@ -181,12 +193,14 @@ clean:
 	$(rm) $(RAYLIB_OBJECTS)
 	$(rm) $(FLECS_OBJECTS)
 	$(rm) $(CJSON_OBJECTS)
-	$(rm) $(TINYFILEDIALOGS)
+	$(rm) $(TINYFILEDIALOGS_OBJECTS)
+	$(rm) $(NUKLEAR_OBJECTS)
 	$(rm) ./vendor/Chipmunk2D/libchipmunk.a
 	$(rm) ./vendor/raylib/libraylib.a
 	$(rm) ./vendor/flecs/libflecs.a
 	$(rm) ./vendor/cJSON/libcjson.a
 	$(rm) ./vendor/tinyfiledialogs/libtinyfiledialogs.a
+	$(rm) ./vendor/Nuklear/libnuklear.a
 	$(rm) $(BINDIR)/$(TARGET)
 ifeq ($(BUILD),RELEASE)
 	$(rm) -R $(RESDIR)
