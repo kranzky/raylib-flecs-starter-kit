@@ -1,7 +1,12 @@
 # vim: noexpandtab filetype=make
 
+.PHONY: game 
+.PHONY: raylib 
+.PHONY: flecs 
+.PHONY: cjson 
+.PHONY: chipmunk 
+.PHONY: dist 
 .PHONY: clean 
-.PHONY: butler 
 
 TARGET = starterkit
 RELEASE = alpha
@@ -19,7 +24,7 @@ CFLAGS += -pedantic-errors -std=gnu11 -I./vendor/raylib -I./vendor/flecs -I./ven
 
 # linker and default flags
 LINKER = $(CC) -o
-LFLAGS = -Wall -std=gnu11 -L./vendor/raylib -lraylib -L./vendor/Chipmunk2D -lchipmunk
+LFLAGS = -Wall -std=gnu11
 
 # build specific settings
 BUILD ?= DEBUG
@@ -84,8 +89,56 @@ POSTCOMPILE = @mv -f $(DEPDIR)/$*.Td $(DEPDIR)/$*.d && touch $@
 
 $(shell mkdir -p $(DEPDIR) >/dev/null)
 
-$(BINDIR)/$(TARGET): $(OBJECTS) ./vendor/Chipmunk2D/libchipmunk.a
-	$(LINKER) $@ ./vendor/flecs/flecs.c ./vendor/cJSON/cJSON.c $(OBJECTS) $(LFLAGS)
+$(OBJDIR)/%.o : $(SRCDIR)/%.c
+$(OBJDIR)/%.o : $(SRCDIR)/%.c $(DEPDIR)/%.d
+	$(CC) $(CFLAGS) -c $< -o $@
+	$(POSTCOMPILE)
+
+$(DEPDIR)/%.d: ;
+.PRECIOUS: $(DEPDIR)/%.d
+
+game: $(BINDIR)/$(TARGET)
+
+raylib: ./vendor/raylib/libraylib.a
+RAYLIB_SOURCES := $(wildcard ./vendor/raylib/*.c)
+RAYLIB_OBJECTS := $(RAYLIB_SOURCES:%.c=%.o)
+./vendor/raylib/libraylib.a: ;
+	make -C ./vendor/raylib RAYLIB_SRC_PATH=. MACOSX_DEPLOYMENT_TARGET=10.9 PLATFORM=PLATFORM_DESKTOP
+LFLAGS += -L./vendor/raylib -lraylib
+LIBS += ./vendor/raylib/libraylib.a
+
+flecs: ./vendor/flecs/libflecs.a
+FLECS_SOURCES := $(wildcard ./vendor/flecs/*.c)
+FLECS_OBJECTS := $(FLECS_SOURCES:%.c=%.o)
+./vendor/flecs/%.o : ./vendor/flecs/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+./vendor/flecs/libflecs.a : $(FLECS_OBJECTS)
+	$(AR) rcs ./vendor/flecs/libflecs.a $(FLECS_OBJECTS)
+LFLAGS += -L./vendor/flecs -lflecs
+LIBS += ./vendor/flecs/libflecs.a
+
+cjson: ./vendor/cJSON/libcjson.a
+CJSON_SOURCES := $(wildcard ./vendor/cJSON/*.c)
+CJSON_OBJECTS := $(CJSON_SOURCES:%.c=%.o)
+./vendor/cJSON/%.o : ./vendor/cJSON/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+./vendor/cJSON/libcjson.a : $(CJSON_OBJECTS)
+	$(AR) rcs ./vendor/cJSON/libcjson.a $(CJSON_OBJECTS)
+LFLAGS += -L./vendor/cJSON -lcjson
+LIBS += ./vendor/cJSON/libcjson.a
+
+chipmunk: ./vendor/Chipmunk2D/libchipmunk.a
+CHIPMUNK_SOURCES := $(wildcard ./vendor/Chipmunk2D/*.c)
+CHIPMUNK_OBJECTS := $(CHIPMUNK_SOURCES:%.c=%.o)
+./vendor/Chipmunk2D/%.o : ./vendor/Chipmunk2D/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+./vendor/Chipmunk2D/libchipmunk.a: $(CHIPMUNK_OBJECTS)
+	$(AR) rcs ./vendor/Chipmunk2D/libchipmunk.a $(CHIPMUNK_OBJECTS)
+LFLAGS += -L./vendor/Chipmunk2D -lchipmunk
+LIBS += ./vendor/Chipmunk2D/libchipmunk.a
+
+$(BINDIR)/$(TARGET): $(OBJECTS) $(LIBS)
+	$(LINKER) $@ $(OBJECTS) $(LFLAGS)
 ifeq ($(BUILD),RELEASE)
 	cp -R res $(RESDIR)
 	@echo $(TAG)-$(RELEASE)+$(HASH) > $(RESDIR)/VERSION
@@ -99,25 +152,7 @@ ifeq ($(BUILD),RELEASE)
   endif
 endif
 
-$(OBJDIR)/%.o : $(SRCDIR)/%.c
-$(OBJDIR)/%.o : $(SRCDIR)/%.c $(DEPDIR)/%.d
-	$(CC) $(CFLAGS) -c $< -o $@
-	$(POSTCOMPILE)
-
-$(DEPDIR)/%.d: ;
-.PRECIOUS: $(DEPDIR)/%.d
-
-CHIPMUNK_SOURCES := $(wildcard ./vendor/Chipmunk2D/*.c)
-CHIPMUNK_OBJECTS := $(CHIPMUNK_SOURCES:%.c=%.o)
-
-./vendor/Chipmunk2D/%.o : ./vendor/Chipmunk2D/%.c
-./vendor/Chipmunk2D/%.o : ./vendor/Chipmunk2D/%.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-./vendor/Chipmunk2D/libchipmunk.a: $(CHIPMUNK_OBJECTS)
-	$(AR) rcs ./vendor/Chipmunk2D/libchipmunk.a $(CHIPMUNK_OBJECTS)
-
-butler:
+dist:
 	butler push $(ITCHARCH) $(ITCHUSER)/$(ITCHGAME):$(ITCHARCH)-$(RELEASE) --userversion-file $(RESDIR)/VERSION
 
 clean:
@@ -127,10 +162,16 @@ clean:
 	$(rm) $(wildcard $(DEPDIR)/*.Td)
 	$(rm) $(OBJECTS)
 	$(rm) $(CHIPMUNK_OBJECTS)
+	$(rm) $(RAYLIB_OBJECTS)
+	$(rm) $(FLECS_OBJECTS)
+	$(rm) $(CJSON_OBJECTS)
 	$(rm) ./vendor/Chipmunk2D/libchipmunk.a
+	$(rm) ./vendor/raylib/libraylib.a
+	$(rm) ./vendor/flecs/libflecs.a
+	$(rm) ./vendor/cJSON/libcjson.a
 	$(rm) $(BINDIR)/$(TARGET)
 ifeq ($(BUILD),RELEASE)
 	$(rm) -R $(RESDIR)
 endif
 
-include $(wildcard $(DEPDIR)/*.d)
+include $(wildcard $(DEPDIR)/**/*.d)

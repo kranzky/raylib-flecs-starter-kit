@@ -8,6 +8,10 @@ vendor/raylib/*.o
 vendor/raylib/*.a
 vendor/Chipmunk2D/*.o
 vendor/Chipmunk2D/*.a
+vendor/flecs/*.o
+vendor/flecs/*.a
+vendor/cJSON/*.o
+vendor/cJSON/*.a
 tmp
 *swp
 .vscode/ipch/

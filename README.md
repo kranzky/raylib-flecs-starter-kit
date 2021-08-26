@@ -1,20 +1,19 @@
 # Raylib+Flecs Starter Kit
 
 This is a template repository that makes it easy to get up-and-running with
-Raylib and Flecs. Builds for Windows, MacOS and Linux are available here:
+Raylib, Flecs, cJSON and Chipmunk.
+
+Builds for Windows, MacOS and Linux are available here:
 
 https://kranzky.itch.io/raylib-flecs-starter-kit
 
 ## Building
 
-First you need to build the raylib library in `vendor/raylib` as follows:
+You can run the project in VSCode. From the command-line, it's just:
 
 ```
-> make clean
-> make RAYLIB_SRC_PATH=. MACOSX_DEPLOYMENT_TARGET=10.9 PLATFORM=PLATFORM_DESKTOP
+> make
 ```
-
-You will then be able to run the project in VS Code.
 
 ## Releasing
 
@@ -23,7 +22,7 @@ You can release your project to itch.io as follows:
 ```
 > make BUILD=RELEASE clean
 > make BUILD=RELEASE
-> make BUILD=RELEASE butler ITCHUSER=youruser ITCHGAME=yourgame
+> make BUILD=RELEASE dist ITCHUSER=youruser ITCHGAME=yourgame
 ```
 
 On Windows, use `mingw32-make`. On Linux, you will release just the 32-bit or
