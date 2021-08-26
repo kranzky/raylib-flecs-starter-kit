@@ -6,6 +6,8 @@ obj/**/*.o
 .d/**/*.Td
 vendor/raylib/*.o
 vendor/raylib/*.a
+vendor/Chipmunk2D/*.o
+vendor/Chipmunk2D/*.a
 tmp
 *swp
 .vscode/ipch/
