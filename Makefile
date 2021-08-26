@@ -158,7 +158,7 @@ nuklear: ./vendor/Nuklear/libnuklear.a
 NUKLEAR_SOURCES := $(wildcard ./vendor/Nuklear/*.c)
 NUKLEAR_OBJECTS := $(NUKLEAR_SOURCES:%.c=%.o)
 ./vendor/Nuklear/%.o : ./vendor/Nuklear/%.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) -DSTBRP_STATIC $(CFLAGS) -c $< -o $@
 ./vendor/Nuklear/libnuklear.a : $(NUKLEAR_OBJECTS)
 	$(AR) rcs ./vendor/Nuklear/libnuklear.a $(NUKLEAR_OBJECTS)
 LFLAGS += -L./vendor/Nuklear -lnuklear
