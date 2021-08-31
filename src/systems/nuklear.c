@@ -5,6 +5,7 @@
 #include "../components/window.h"
 
 #include "../managers/texture.h"
+#include "../managers/font.h"
 
 #include "nuklear.h"
 
@@ -25,9 +26,17 @@ void nuklear_input(ecs_iter_t *it)
 }
 
 //------------------------------------------------------------------------------
-static inline struct nk_rect _convert_rect(Rectangle rect)
+
+static inline struct nk_rect _to_rect(Rectangle rect)
 {
   return nk_rect(rect.x, rect.y, rect.width, rect.height);
+}
+
+//------------------------------------------------------------------------------
+
+static inline Color _from_color(struct nk_color color)
+{
+  return (Color){color.r, color.g, color.b, color.a};
 }
 
 //------------------------------------------------------------------------------
@@ -38,7 +47,7 @@ void nuklear_update(ecs_iter_t *it)
   Window *window = ecs_column(it, Window, 2);
   for (int i = 0; i < it->count; ++i)
   {
-    if (nk_begin(nuklear, window[i].name, _convert_rect(window[i].bounds), window[i].flags))
+    if (nk_begin(nuklear, window[i].name, _to_rect(window[i].bounds), window[i].flags))
     {
       // TODO: child rows
     }
@@ -48,9 +57,9 @@ void nuklear_update(ecs_iter_t *it)
 
 //------------------------------------------------------------------------------
 
-static inline void _scissor(const struct nk_command *command)
+static inline void _scissor(const struct nk_command_scissor *command)
 {
-  TraceLog(LOG_WARNING, "Unimplemented Nuklear Command: scissor");
+  BeginScissorMode(command->x, command->y, command->w, command->h);
 }
 
 //------------------------------------------------------------------------------
@@ -69,16 +78,26 @@ static inline void _curve(const struct nk_command *command)
 
 //------------------------------------------------------------------------------
 
-static inline void _rect(const struct nk_command *command)
+static inline void _rect(const struct nk_command_rect *command)
 {
-  TraceLog(LOG_WARNING, "Unimplemented Nuklear Command: rect");
+  Color color = _from_color(command->color);
+  Rectangle rect = (Rectangle){command->x, command->y, command->w, command->h};
+  if (command->rounding > 0)
+    DrawRectangleRoundedLines(rect, command->rounding * 0.05, 1, command->line_thickness, color);
+  else
+    DrawRectangleLinesEx(rect, command->line_thickness, color);
 }
 
 //------------------------------------------------------------------------------
 
-static inline void _rect_filled(const struct nk_command *command)
+static inline void _rect_filled(const struct nk_command_rect_filled *command)
 {
-  TraceLog(LOG_WARNING, "Unimplemented Nuklear Command: rect_filled");
+  Color color = _from_color(command->color);
+  Rectangle rect = (Rectangle){command->x, command->y, command->w, command->h};
+  if (command->rounding > 0)
+    DrawRectangleRounded(rect, command->rounding * 0.05, 1, color);
+  else
+    DrawRectangleRec(rect, color);
 }
 
 //------------------------------------------------------------------------------
@@ -153,9 +172,15 @@ static inline void _polyline(const struct nk_command *command)
 
 //------------------------------------------------------------------------------
 
-static inline void _text(const struct nk_command *command)
+static inline void _text(const struct nk_command_text *command)
 {
-  TraceLog(LOG_WARNING, "Unimplemented Nuklear Command: text");
+  Color fore = _from_color(command->foreground);
+  Color back = _from_color(command->background);
+  float size = command->font->height;
+  Rectangle rect = (Rectangle){command->x, command->y, command->w, command->h};
+  DrawRectangleRec(rect, back);
+  Vector2 position = (Vector2){command->x, command->y};
+  DrawTextEx(*font_manager_get(FONT_CLOVER), command->string, (Vector2){command->x, command->y}, size, 0.1 * size, fore);
 }
 
 //------------------------------------------------------------------------------
@@ -186,7 +211,7 @@ void nuklear_render(ecs_iter_t *it)
     case NK_COMMAND_NOP:
       break;
     case NK_COMMAND_SCISSOR:
-      _scissor(command);
+      _scissor((const struct nk_command_scissor *)command);
       break;
     case NK_COMMAND_LINE:
       _line(command);
@@ -195,10 +220,10 @@ void nuklear_render(ecs_iter_t *it)
       _curve(command);
       break;
     case NK_COMMAND_RECT:
-      _rect(command);
+      _rect((const struct nk_command_rect *)command);
       break;
     case NK_COMMAND_RECT_FILLED:
-      _rect_filled(command);
+      _rect_filled((const struct nk_command_rect_filled *)command);
       break;
     case NK_COMMAND_RECT_MULTI_COLOR:
       _rect_multi_color(command);
@@ -231,7 +256,7 @@ void nuklear_render(ecs_iter_t *it)
       _polyline(command);
       break;
     case NK_COMMAND_TEXT:
-      _text(command);
+      _text((const struct nk_command_text *)command);
       break;
     case NK_COMMAND_IMAGE:
       _image(command);

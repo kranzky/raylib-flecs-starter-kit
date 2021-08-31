@@ -3,6 +3,8 @@
 #include "../components/nuklear.h"
 #include "../components/window.h"
 
+#include "../managers/font.h"
+
 #include "nuklear.h"
 
 //==============================================================================
@@ -20,9 +22,9 @@ static void _fini(ecs_world_t *world, void *context)
 
 //------------------------------------------------------------------------------
 
-static float _nuklear_get_font_width(nk_handle handle, float height, const char *text, int length)
+static float _nuklear_get_font_width(nk_handle handle, float size, const char *text, int length)
 {
-  return MeasureText(text, height);
+  return MeasureTextEx(*font_manager_get(FONT_CLOVER), text, size, 0.1 * size).x;
 }
 
 //------------------------------------------------------------------------------
