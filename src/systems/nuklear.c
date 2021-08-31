@@ -3,6 +3,7 @@
 #include "../components/input.h"
 #include "../components/nuklear.h"
 #include "../components/window.h"
+#include "../components/widget.h"
 
 #include "../managers/texture.h"
 #include "../managers/font.h"
@@ -45,14 +46,21 @@ void nuklear_update(ecs_iter_t *it)
 {
   Nuklear *nuklear = ecs_column(it, Nuklear, 1);
   Window *window = ecs_column(it, Window, 2);
-  for (int i = 0; i < it->count; ++i)
+  Widget *widget = ecs_column(it, Widget, 3);
+  if (nk_begin(nuklear, window->name, _to_rect(window->bounds), window->flags))
   {
-    if (nk_begin(nuklear, window[i].name, _to_rect(window[i].bounds), window[i].flags))
+    nk_layout_row_dynamic(nuklear, 0, it->count);
+    for (int i = 0; i < it->count; ++i)
     {
-      // TODO: child rows
+      switch (widget[i].type)
+      {
+      case WIDGET_LABEL:
+        nk_label(nuklear, widget[i].name, NK_TEXT_LEFT);
+        break;
+      }
     }
-    nk_end(nuklear);
   }
+  nk_end(nuklear);
 }
 
 //------------------------------------------------------------------------------

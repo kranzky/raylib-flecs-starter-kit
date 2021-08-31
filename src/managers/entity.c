@@ -4,9 +4,6 @@
 #include "../components/spatial.h"
 #include "../components/tinted.h"
 #include "../components/nuklear.h"
-#include "../components/window.h"
-
-#include "../defines.h"
 
 #include "entity.h"
 
@@ -14,15 +11,6 @@
 
 static void _fini(ecs_world_t *world, void *context)
 {
-}
-
-//------------------------------------------------------------------------------
-
-static inline void _add_parent(ecs_world_t *world, ecs_entity_t child, ecs_entity_t parent)
-{
-  if (parent == 0 || child == 0)
-    return;
-  ecs_add_pair(world, child, EcsChildOf, parent);
 }
 
 //------------------------------------------------------------------------------
@@ -55,17 +43,7 @@ ecs_entity_t entity_manager_spawn_label(ecs_world_t *world, ecs_entity_t parent,
   ecs_set(world, entity, Label, {.font = font, .text = text, .align = align, .valign = valign, .size = size});
   ecs_set(world, entity, Spatial, {.position = position});
   ecs_set(world, entity, Tinted, {.tint = tint});
-  _add_parent(world, entity, parent);
-  return entity;
-}
-
-//------------------------------------------------------------------------------
-
-ecs_entity_t entity_manager_spawn_window(ecs_world_t *world, ecs_entity_t parent, const char *name, int x, int y, int width, int height)
-{
-  ecs_entity_t entity = ecs_new(world, 0);
-  ecs_set(world, entity, Window, {.name = name, .bounds = (Rectangle){x, y, width, height}, .flags = NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_CLOSABLE});
-  _add_parent(world, entity, parent);
+  ecs_add_pair(world, entity, EcsChildOf, parent);
   return entity;
 }
 

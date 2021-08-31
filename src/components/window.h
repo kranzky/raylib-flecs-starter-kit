@@ -4,8 +4,6 @@
 #include <flecs.h>
 #include <raylib.h>
 
-// TODO: call nk_window_close on destruction; use flecs callback
-
 typedef struct Window
 {
   const char *name;

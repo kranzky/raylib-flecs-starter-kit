@@ -1,7 +1,9 @@
+#include <flecs.h>
 #include <raylib.h>
 
 #include "../components/nuklear.h"
 #include "../components/window.h"
+#include "../components/widget.h"
 
 #include "../managers/font.h"
 
@@ -68,4 +70,24 @@ void nuklear_manager_init(ecs_world_t *world)
   nk_init_default(nuklear, &_font);
   ecs_singleton_modified(world, Nuklear);
   ECS_TRIGGER(world, _remove_window, EcsOnRemove, Window);
+}
+
+//------------------------------------------------------------------------------
+
+ecs_entity_t nuklear_window(ecs_world_t *world, ecs_entity_t parent, const char *name, int x, int y, int width, int height)
+{
+  ecs_entity_t entity = ecs_new(world, 0);
+  ecs_set(world, entity, Window, {.name = name, .bounds = (Rectangle){x, y, width, height}, .flags = NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_CLOSABLE});
+  ecs_add_pair(world, entity, EcsChildOf, parent);
+  return entity;
+}
+
+//------------------------------------------------------------------------------
+
+ecs_entity_t nuklear_label(ecs_world_t *world, ecs_entity_t window, const char *name)
+{
+  ecs_entity_t entity = ecs_new(world, 0);
+  ecs_set(world, entity, Widget, {.type = WIDGET_LABEL, .name = name});
+  ecs_add_pair(world, entity, EcsChildOf, window);
+  return entity;
 }
