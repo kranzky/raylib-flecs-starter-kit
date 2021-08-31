@@ -6,6 +6,7 @@
 #include "../components/settings.h"
 #include "../components/debug.h"
 #include "../components/nuklear.h"
+#include "../components/window.h"
 
 #include "component.h"
 
@@ -28,4 +29,5 @@ void component_manager_init(ecs_world_t *world)
   ECS_COMPONENT_DEFINE(world, Settings);
   ECS_COMPONENT_DEFINE(world, Debug);
   ECS_COMPONENT_DEFINE(world, Nuklear);
+  ECS_COMPONENT_DEFINE(world, Window);
 }

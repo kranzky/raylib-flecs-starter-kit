@@ -2,8 +2,9 @@
 
 #include "../components/input.h"
 #include "../components/nuklear.h"
+#include "../components/window.h"
 
-#include "../managers/game.h"
+#include "../managers/texture.h"
 
 #include "nuklear.h"
 
@@ -21,6 +22,28 @@ void nuklear_input(ecs_iter_t *it)
   // nk_input_key(nuklear, key, down);
   // nk_input_unicode(nuklear, rune);
   nk_input_end(nuklear);
+}
+
+//------------------------------------------------------------------------------
+static inline struct nk_rect _convert_rect(Rectangle rect)
+{
+  return nk_rect(rect.x, rect.y, rect.width, rect.height);
+}
+
+//------------------------------------------------------------------------------
+
+void nuklear_update(ecs_iter_t *it)
+{
+  Nuklear *nuklear = ecs_column(it, Nuklear, 1);
+  Window *window = ecs_column(it, Window, 2);
+  for (int i = 0; i < it->count; ++i)
+  {
+    if (nk_begin(nuklear, window[i].name, _convert_rect(window[i].bounds), window[i].flags))
+    {
+      // TODO: child rows
+    }
+    nk_end(nuklear);
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -155,6 +178,7 @@ void nuklear_render(ecs_iter_t *it)
 {
   Nuklear *nuklear = ecs_column(it, Nuklear, 1);
   const struct nk_command *command;
+  BeginTextureMode(*texture_manager_playfield());
   nk_foreach(command, nuklear)
   {
     switch (command->type)
@@ -217,5 +241,6 @@ void nuklear_render(ecs_iter_t *it)
       break;
     }
   }
+  EndTextureMode();
   nk_clear(nuklear);
 }
