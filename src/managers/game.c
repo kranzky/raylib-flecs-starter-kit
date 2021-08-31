@@ -4,9 +4,6 @@
 #include <flecs.h>
 #include <chipmunk.h>
 #include <tinyfiledialogs.h>
-#include <nuklear.h>
-
-#include "../components/nuklear.h"
 
 #include "texture.h"
 #include "sound.h"
@@ -20,6 +17,7 @@
 #include "settings.h"
 #include "debug.h"
 #include "input.h"
+#include "nuklear.h"
 
 #include "game.h"
 
@@ -89,41 +87,6 @@ static inline void _init_raylib()
 
 //------------------------------------------------------------------------------
 
-static float _nuklear_get_font_width(nk_handle handle, float height, const char *text, int length)
-{
-  return MeasureText(text, height);
-}
-
-//------------------------------------------------------------------------------
-
-static void _nuklear_clipboard_copy(nk_handle user, const char *text, int length)
-{
-  SetClipboardText(text);
-}
-
-//------------------------------------------------------------------------------
-
-static void _nuklear_clipboard_paste(nk_handle user, struct nk_text_edit *edit)
-{
-  const char *text = GetClipboardText();
-  if (text == NULL)
-    return;
-  nk_textedit_paste(edit, text, TextLength(text));
-}
-
-//------------------------------------------------------------------------------
-
-static inline void _init_nuklear()
-{
-  return;
-  ecs_singleton_set(_world, Nuklear, {.clip = {.copy = _nuklear_clipboard_copy, .paste = _nuklear_clipboard_paste}});
-  Nuklear *nuklear = ecs_singleton_get_mut(_world, Nuklear);
-  nk_init_default(nuklear, NULL);
-  ecs_singleton_modified(_world, Nuklear);
-}
-
-//------------------------------------------------------------------------------
-
 static inline void _show_loading_screen()
 {
   for (int i = 0; i < 2; ++i)
@@ -150,6 +113,7 @@ static inline void _init_managers()
   debug_manager_init(_world);
   settings_manager_init(_world);
   input_manager_init(_world);
+  nuklear_manager_init(_world);
   system_manager_init(_world);
 }
 
@@ -160,7 +124,6 @@ void game_manager_init(void)
   _init_chipmunk();
   _init_flecs();
   _init_raylib();
-  _init_nuklear();
   _show_loading_screen();
   _init_managers();
 #ifdef DEBUG

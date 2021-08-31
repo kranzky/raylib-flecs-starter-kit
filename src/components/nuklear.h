@@ -1,6 +1,8 @@
 #ifndef NUKLEAR_COMPONENT_H
 #define NUKLEAR_COMPONENT_H
 
+#include "../defines.h"
+
 #include <nuklear.h>
 #include <flecs.h>
 

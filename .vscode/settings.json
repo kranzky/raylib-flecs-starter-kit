@@ -5,7 +5,8 @@
     "random": "c",
     "__locale": "c",
     "ios": "c",
-    "entity.h": "c"
+    "entity.h": "c",
+    "tinyfiledialogs.h": "c"
   },
   "C_Cpp.default.includePath": [],
   "files.eol": "\n"

@@ -1,12 +1,9 @@
 #include <raylib.h>
-#include <nuklear.h>
 
 #include "../components/input.h"
 #include "../components/nuklear.h"
 
 #include "../managers/game.h"
-
-#include "../defines.h"
 
 #include "nuklear.h"
 
