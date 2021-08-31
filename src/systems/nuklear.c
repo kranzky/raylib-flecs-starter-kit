@@ -49,9 +49,16 @@ void nuklear_update(ecs_iter_t *it)
   Widget *widget = ecs_column(it, Widget, 3);
   if (nk_begin(nuklear, window->name, _to_rect(window->bounds), window->flags))
   {
-    nk_layout_row_dynamic(nuklear, 0, it->count);
     for (int i = 0; i < it->count; ++i)
     {
+      if (i == 0 || widget[i].type == WIDGET_SEPARATOR)
+      {
+        int count = (i == 0) ? 1 : 0;
+        for (int j = i + 1; j < it->count; ++j, ++count)
+          if (widget[j].type == WIDGET_SEPARATOR)
+            break;
+        nk_layout_row_dynamic(nuklear, 0, count);
+      }
       switch (widget[i].type)
       {
       case WIDGET_LABEL:
@@ -152,9 +159,10 @@ static inline void _triangle(const struct nk_command *command)
 
 //------------------------------------------------------------------------------
 
-static inline void _triangle_filled(const struct nk_command *command)
+static inline void _triangle_filled(const struct nk_command_triangle_filled *command)
 {
-  TraceLog(LOG_WARNING, "Unimplemented Nuklear Command: triangle_filled");
+  Color color = _from_color(command->color);
+  DrawTriangle((Vector2){command->b.x, command->b.y}, (Vector2){command->a.x, command->a.y}, (Vector2){command->c.x, command->c.y}, color);
 }
 
 //------------------------------------------------------------------------------
@@ -252,7 +260,7 @@ void nuklear_render(ecs_iter_t *it)
       _triangle(command);
       break;
     case NK_COMMAND_TRIANGLE_FILLED:
-      _triangle_filled(command);
+      _triangle_filled((struct nk_command_triangle_filled *)command);
       break;
     case NK_COMMAND_POLYGON:
       _polygon(command);
@@ -274,6 +282,7 @@ void nuklear_render(ecs_iter_t *it)
       break;
     }
   }
+  EndScissorMode();
   EndTextureMode();
   nk_clear(nuklear);
 }

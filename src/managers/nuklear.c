@@ -77,7 +77,7 @@ void nuklear_manager_init(ecs_world_t *world)
 ecs_entity_t nuklear_window(ecs_world_t *world, ecs_entity_t parent, const char *name, int x, int y, int width, int height)
 {
   ecs_entity_t entity = ecs_new(world, 0);
-  ecs_set(world, entity, Window, {.name = name, .bounds = (Rectangle){x, y, width, height}, .flags = NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_CLOSABLE});
+  ecs_set(world, entity, Window, {.name = name, .bounds = (Rectangle){x, y, width, height}, .flags = NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_CLOSABLE | NK_WINDOW_SCALABLE | NK_WINDOW_TITLE});
   ecs_add_pair(world, entity, EcsChildOf, parent);
   return entity;
 }
@@ -88,6 +88,16 @@ ecs_entity_t nuklear_label(ecs_world_t *world, ecs_entity_t window, const char *
 {
   ecs_entity_t entity = ecs_new(world, 0);
   ecs_set(world, entity, Widget, {.type = WIDGET_LABEL, .name = name});
+  ecs_add_pair(world, entity, EcsChildOf, window);
+  return entity;
+}
+
+//------------------------------------------------------------------------------
+
+ecs_entity_t nuklear_separator(ecs_world_t *world, ecs_entity_t window)
+{
+  ecs_entity_t entity = ecs_new(world, 0);
+  ecs_set(world, entity, Widget, {.type = WIDGET_SEPARATOR});
   ecs_add_pair(world, entity, EcsChildOf, window);
   return entity;
 }

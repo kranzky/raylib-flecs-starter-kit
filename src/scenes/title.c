@@ -19,8 +19,18 @@ void init_title(ecs_world_t *world, const Scene *scene, ecs_entity_t parent)
   entity_manager_spawn_label(world, parent, FONT_CLOVER, "Title Screen", ALIGN_CENTRE, VALIGN_MIDDLE, 50, position, ORANGE);
   ecs_entity_t window = nuklear_window(world, parent, "Hello Window", 100, 100, 300, 200);
   nuklear_label(world, window, "Mister Label");
-  nuklear_label(world, window, "That's My Name");
-  nuklear_window(world, parent, "Another One", 50, 150, 400, 100);
+  window = nuklear_window(world, parent, "Another One", 50, 150, 400, 300);
+  nuklear_label(world, window, "Why Not Work");
+  nuklear_label(world, window, "Another One");
+  nuklear_separator(world, window);
+  nuklear_label(world, window, "One");
+  nuklear_label(world, window, "Two");
+  nuklear_label(world, window, "Three");
+  nuklear_separator(world, window);
+  nuklear_label(world, window, "Single");
+  nuklear_separator(world, window);
+  nuklear_label(world, window, "Why Not Work");
+  nuklear_label(world, window, "Another One");
   _quit = false;
 }
 
