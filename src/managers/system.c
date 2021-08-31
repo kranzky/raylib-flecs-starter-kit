@@ -3,6 +3,7 @@
 #include "../systems/scene.h"
 #include "../systems/render.h"
 #include "../systems/input.h"
+#include "../systems/nuklear.h"
 
 #ifdef DEBUG
 #include "../systems/debug.h"
