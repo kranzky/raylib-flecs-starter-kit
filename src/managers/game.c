@@ -6,6 +6,8 @@
 #include <tinyfiledialogs.h>
 #include <nuklear.h>
 
+#include "../components/nuklear.h"
+
 #include "texture.h"
 #include "sound.h"
 #include "music.h"
@@ -25,7 +27,6 @@
 
 static ecs_world_t *_world = NULL;
 static cpSpace *_space = NULL;
-static struct nk_context _context = {0};
 
 //==============================================================================
 
@@ -114,8 +115,11 @@ static void _nuklear_clipboard_paste(nk_handle user, struct nk_text_edit *edit)
 
 static inline void _init_nuklear()
 {
-  _context = (struct nk_context){.clip = {.copy = _nuklear_clipboard_copy, .paste = _nuklear_clipboard_paste}};
-  nk_init_default(&_context, NULL);
+  return;
+  ecs_singleton_set(_world, Nuklear, {.clip = {.copy = _nuklear_clipboard_copy, .paste = _nuklear_clipboard_paste}});
+  Nuklear *nuklear = ecs_singleton_get_mut(_world, Nuklear);
+  nk_init_default(nuklear, NULL);
+  ecs_singleton_modified(_world, Nuklear);
 }
 
 //------------------------------------------------------------------------------

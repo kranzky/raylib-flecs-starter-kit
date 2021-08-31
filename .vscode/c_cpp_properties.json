@@ -8,9 +8,9 @@
                 "${workspaceFolder}/vendor/flecs",
                 "${workspaceFolder}/vendor/raylib",
                 "${workspaceFolder}/vendor/cJSON",
-                "${workspaceFolder}/vendor/Chipmunk2D",
+                "${workspaceFolder}/vendor/Chipmunk2D/chipmunk",
                 "${workspaceFolder}/vendor/Nuklear",
-                "${workspaceFolder}/vendor/raylib"
+                "${workspaceFolder}/vendor/tinyfiledialogs"
             ],
             "defines": [],
             "macFrameworkPath": [],
