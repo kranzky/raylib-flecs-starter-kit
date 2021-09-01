@@ -19,9 +19,10 @@ void nuklear_input(ecs_iter_t *it)
   nk_input_begin(nuklear);
   nk_input_motion(nuklear, input->pointer.x, input->pointer.y);
   nk_input_button(nuklear, NK_BUTTON_LEFT, input->pointer.x, input->pointer.y, input->fire);
-  // NK_KEY_UP NK_KEY_DOWN NK_KEY_LEFT NK_KEY_RIGHT NK_KEY_ENTER NK_KEY_TAB NK_KEY_BACKSPACE
-  // nk_input_key(nuklear, key, down);
-  // nk_input_unicode(nuklear, rune);
+  nk_input_key(nuklear, NK_KEY_LEFT, input->joystick.x < 0);
+  nk_input_key(nuklear, NK_KEY_RIGHT, input->joystick.x < 0);
+  nk_input_key(nuklear, NK_KEY_UP, input->joystick.y < 0);
+  nk_input_key(nuklear, NK_KEY_DOWN, input->joystick.y < 0);
   nk_input_end(nuklear);
 }
 
@@ -62,6 +63,10 @@ void nuklear_update(ecs_iter_t *it)
       {
       case WIDGET_LABEL:
         nk_label(nuklear, widget[i].name, NK_TEXT_LEFT);
+        break;
+      case WIDGET_BUTTON:
+        if (nk_button_label(nuklear, widget[i].name))
+          widget[i].callback(&widget[i]);
         break;
       }
     }
