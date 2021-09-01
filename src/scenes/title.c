@@ -10,26 +10,27 @@
 //==============================================================================
 
 static bool _quit = false;
+static bool _play = false;
 
 //==============================================================================
 
 static void _play_game(Widget *widget)
 {
-  TraceLog(LOG_TRACE, "PLAY GAME");
+  _play = true;
 }
 
 //------------------------------------------------------------------------------
 
 static void _quit_game(Widget *widget)
 {
-  TraceLog(LOG_TRACE, "QUIT GAME");
+  _quit = true;
 }
 
 //------------------------------------------------------------------------------
 
 static void _set_volume(Widget *widget)
 {
-  TraceLog(LOG_TRACE, "SET VOLUME %f", widget->value);
+  TraceLog(LOG_TRACE, "SET VOLUME %0.1f", widget->value);
 }
 
 //------------------------------------------------------------------------------
@@ -58,14 +59,17 @@ void init_title(ecs_world_t *world, const Scene *scene, ecs_entity_t parent)
   nuklear_label(world, window, "Why Not Work");
   nuklear_label(world, window, "Another One");
   _quit = false;
+  _play = false;
 }
 
 //------------------------------------------------------------------------------
 
 bool update_title(ecs_world_t *world, const Scene *scene, const Input *input, const Settings *settings, ecs_entity_t parent)
 {
-  _quit = input->quit && (tinyfd_messageBox(GAME_NAME, "Really quit?", "yesno", "warning", 1) == 1);
+  _quit |= input->quit;
   if (_quit)
+    _quit = (tinyfd_messageBox(GAME_NAME, "Really quit?", "yesno", "warning", 1) == 1);
+  if (_quit || _play)
     return false;
   return true;
 }
