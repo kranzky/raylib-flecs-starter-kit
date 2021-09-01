@@ -13,6 +13,7 @@ typedef struct Input
   bool toggle_fullscreen;
   Vector2 joystick;
   Vector2 pointer;
+  float wheel;
   bool fire;
 } Input;
 

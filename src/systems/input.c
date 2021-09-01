@@ -63,6 +63,7 @@ void process_input(ecs_iter_t *it)
   input->fire |= IsMouseButtonDown(MOUSE_LEFT_BUTTON);
   input->select |= IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
   input->pointer = Vector2Scale(Vector2Subtract(GetMousePosition(), (Vector2){settings->bounds.x, settings->bounds.y}), 1.0 / scale);
+  input->wheel = GetMouseWheelMove();
 
   input->fire |= IsKeyDown(KEY_ENTER);
   input->fire |= IsKeyDown(KEY_SPACE);

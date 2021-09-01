@@ -12,12 +12,17 @@
 
 //==============================================================================
 
+static bool _scissoring = false;
+
+//==============================================================================
+
 void nuklear_input(ecs_iter_t *it)
 {
   Nuklear *nuklear = ecs_column(it, Nuklear, 1);
   Input *input = ecs_column(it, Input, 2);
   nk_input_begin(nuklear);
   nk_input_motion(nuklear, input->pointer.x, input->pointer.y);
+  nk_input_scroll(nuklear, (struct nk_vec2){0, input->wheel});
   nk_input_button(nuklear, NK_BUTTON_LEFT, input->pointer.x, input->pointer.y, input->fire);
   nk_input_key(nuklear, NK_KEY_LEFT, input->joystick.x < 0);
   nk_input_key(nuklear, NK_KEY_RIGHT, input->joystick.x < 0);
@@ -78,7 +83,10 @@ void nuklear_update(ecs_iter_t *it)
 
 static inline void _scissor(const struct nk_command_scissor *command)
 {
+  if (_scissoring)
+    EndScissorMode();
   BeginScissorMode(command->x, command->y, command->w, command->h);
+  _scissoring = true;
 }
 
 //------------------------------------------------------------------------------
@@ -223,6 +231,7 @@ void nuklear_render(ecs_iter_t *it)
 {
   Nuklear *nuklear = ecs_column(it, Nuklear, 1);
   const struct nk_command *command;
+  _scissoring = false;
   BeginTextureMode(*texture_manager_playfield());
   nk_foreach(command, nuklear)
   {
@@ -286,7 +295,8 @@ void nuklear_render(ecs_iter_t *it)
       break;
     }
   }
-  EndScissorMode();
+  if (_scissoring)
+    EndScissorMode();
   EndTextureMode();
   nk_clear(nuklear);
 }
