@@ -17,9 +17,8 @@ void nuklear_input(ecs_iter_t *it)
   Nuklear *nuklear = ecs_column(it, Nuklear, 1);
   Input *input = ecs_column(it, Input, 2);
   nk_input_begin(nuklear);
-  // nk_input_motion(nuklear, x, y);
-  // NK_BUTTON_LEFT
-  // nk_input_button(nuklear, btn, x, y, down);
+  nk_input_motion(nuklear, input->pointer.x, input->pointer.y);
+  nk_input_button(nuklear, NK_BUTTON_LEFT, input->pointer.x, input->pointer.y, input->fire);
   // NK_KEY_UP NK_KEY_DOWN NK_KEY_LEFT NK_KEY_RIGHT NK_KEY_ENTER NK_KEY_TAB NK_KEY_BACKSPACE
   // nk_input_key(nuklear, key, down);
   // nk_input_unicode(nuklear, rune);

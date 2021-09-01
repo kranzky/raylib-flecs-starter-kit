@@ -19,4 +19,7 @@
 #define NK_INCLUDE_DEFAULT_FONT
 #define NK_BUTTON_TRIGGER_ON_RELEASE
 
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
 #endif

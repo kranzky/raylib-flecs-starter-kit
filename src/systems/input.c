@@ -6,6 +6,8 @@
 
 #include "input.h"
 
+#include "../defines.h"
+
 //==============================================================================
 
 void process_input(ecs_iter_t *it)
@@ -13,6 +15,16 @@ void process_input(ecs_iter_t *it)
   Input *input = ecs_column(it, Input, 1);
   Settings *settings = ecs_column(it, Settings, 2);
   *input = (Input){0};
+
+  int window_width = GetScreenWidth();
+  int window_height = GetScreenHeight();
+#ifdef MAC
+  window_width *= GetWindowScaleDPI().x;
+  window_height *= GetWindowScaleDPI().y;
+#endif
+
+  float scale = MIN((float)window_width / RASTER_WIDTH, (float)window_height / RASTER_HEIGHT);
+  settings->bounds = (Rectangle){(window_width - ((float)RASTER_WIDTH * scale)) * 0.5f, (window_height - ((float)RASTER_HEIGHT * scale)) * 0.5f, (float)RASTER_WIDTH * scale, (float)RASTER_HEIGHT * scale};
 
   input->quit |= IsKeyPressed(KEY_ESCAPE);
   input->quit |= IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_Q);
@@ -50,7 +62,7 @@ void process_input(ecs_iter_t *it)
 
   input->fire |= IsMouseButtonDown(MOUSE_LEFT_BUTTON);
   input->select |= IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
-  input->pointer = GetMousePosition();
+  input->pointer = Vector2Scale(Vector2Subtract(GetMousePosition(), (Vector2){settings->bounds.x, settings->bounds.y}), 1.0 / scale);
 
   input->fire |= IsKeyDown(KEY_ENTER);
   input->fire |= IsKeyDown(KEY_SPACE);

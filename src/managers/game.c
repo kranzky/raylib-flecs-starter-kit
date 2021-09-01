@@ -5,6 +5,8 @@
 #include <chipmunk.h>
 #include <tinyfiledialogs.h>
 
+#include "../components/settings.h"
+
 #include "texture.h"
 #include "sound.h"
 #include "music.h"
@@ -157,24 +159,11 @@ void game_manager_loop(void)
     cpSpaceStep(_space, GetFrameTime());
     running = ecs_progress(_world, GetFrameTime());
 
-    int window_width = GetScreenWidth();
-    int window_height = GetScreenHeight();
-
-#ifdef MAC
-    window_width *= GetWindowScaleDPI().x;
-    window_height *= GetWindowScaleDPI().y;
-#endif
-
-    float scale = MIN((float)window_width / RASTER_WIDTH, (float)window_height / RASTER_HEIGHT);
-    Rectangle dst = {
-        (window_width - ((float)RASTER_WIDTH * scale)) * 0.5f,
-        (window_height - ((float)RASTER_HEIGHT * scale)) * 0.5f,
-        (float)RASTER_WIDTH * scale,
-        (float)RASTER_HEIGHT * scale};
+    const Settings *settings = ecs_singleton_get(_world, Settings);
 
     BeginDrawing();
     ClearBackground(DARKGRAY);
-    DrawTexturePro(playfield->texture, src, dst, (Vector2){0}, 0.0f, WHITE);
+    DrawTexturePro(playfield->texture, src, settings->bounds, (Vector2){0}, 0.0f, WHITE);
     EndDrawing();
   }
 }
