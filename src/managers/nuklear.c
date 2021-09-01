@@ -104,6 +104,16 @@ ecs_entity_t nuklear_button(ecs_world_t *world, ecs_entity_t window, const char 
 
 //------------------------------------------------------------------------------
 
+ecs_entity_t nuklear_slider(ecs_world_t *world, ecs_entity_t window, float value, void (*callback)(Widget *widget))
+{
+  ecs_entity_t entity = ecs_new(world, 0);
+  ecs_set(world, entity, Widget, {.type = WIDGET_SLIDER, .value = value, .callback = callback});
+  ecs_add_pair(world, entity, EcsChildOf, window);
+  return entity;
+}
+
+//------------------------------------------------------------------------------
+
 ecs_entity_t nuklear_separator(ecs_world_t *world, ecs_entity_t window)
 {
   ecs_entity_t entity = ecs_new(world, 0);

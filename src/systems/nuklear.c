@@ -73,6 +73,10 @@ void nuklear_update(ecs_iter_t *it)
         if (nk_button_label(nuklear, widget[i].name))
           widget[i].callback(&widget[i]);
         break;
+      case WIDGET_SLIDER:
+        if (nk_slider_float(nuklear, 0, &widget[i].value, 100, 0.1))
+          widget[i].callback(&widget[i]);
+        break;
       }
     }
   }
@@ -143,9 +147,10 @@ static inline void _circle(const struct nk_command *command)
 
 //------------------------------------------------------------------------------
 
-static inline void _circle_filled(const struct nk_command *command)
+static inline void _circle_filled(const struct nk_command_circle_filled *command)
 {
-  TraceLog(LOG_WARNING, "Unimplemented Nuklear Command: circle_filled");
+  Color color = _from_color(command->color);
+  DrawEllipse(command->x + 0.5 * command->w, command->y + 0.5 * command->h, 0.5 * command->w, 0.5 * command->h / 2, color);
 }
 
 //------------------------------------------------------------------------------
@@ -227,6 +232,7 @@ static inline void _custom(const struct nk_command *command)
 
 //------------------------------------------------------------------------------
 
+// TODO: gui setting for nk_item_is_any_active
 void nuklear_render(ecs_iter_t *it)
 {
   Nuklear *nuklear = ecs_column(it, Nuklear, 1);
@@ -261,7 +267,7 @@ void nuklear_render(ecs_iter_t *it)
       _circle(command);
       break;
     case NK_COMMAND_CIRCLE_FILLED:
-      _circle_filled(command);
+      _circle_filled((const struct nk_command_circle_filled *)command);
       break;
     case NK_COMMAND_ARC:
       _arc(command);

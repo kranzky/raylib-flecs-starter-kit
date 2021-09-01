@@ -27,6 +27,13 @@ static void _quit_game(Widget *widget)
 
 //------------------------------------------------------------------------------
 
+static void _set_volume(Widget *widget)
+{
+  TraceLog(LOG_TRACE, "SET VOLUME %f", widget->value);
+}
+
+//------------------------------------------------------------------------------
+
 void init_title(ecs_world_t *world, const Scene *scene, ecs_entity_t parent)
 {
   Vector2 position = {RASTER_WIDTH * 0.5, RASTER_HEIGHT * 0.5};
@@ -36,6 +43,8 @@ void init_title(ecs_world_t *world, const Scene *scene, ecs_entity_t parent)
   nuklear_separator(world, window);
   nuklear_button(world, window, "Play Game", _play_game);
   nuklear_button(world, window, "Quit Game", _quit_game);
+  nuklear_separator(world, window);
+  nuklear_slider(world, window, 42, _set_volume);
   window = nuklear_window(world, parent, "Another One", 50, 150, 400, 300);
   nuklear_label(world, window, "Why Not Work");
   nuklear_label(world, window, "Another One");
