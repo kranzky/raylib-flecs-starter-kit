@@ -18,6 +18,9 @@ SRCDIR = src
 OBJDIR = obj
 BINDIR = bin
 
+# for recursive make
+MAKE = make
+
 # compiler and default flags
 CC = gcc
 AR = ar
@@ -55,8 +58,9 @@ ifeq ($(ARCH),MAC)
 endif
 ifeq ($(ARCH),WIN)
   ITCHARCH = win
+  MAKE = mingw32-make
   CFLAGS += -DWINDOWS
-  LFLAGS += -static -lopengl32 -lgdi32
+  LFLAGS += -static
   TARGET = starterkit.exe
   ifeq ($(BUILD),RELEASE)
     BINDIR = win
@@ -105,7 +109,7 @@ raylib: ./vendor/raylib/libraylib.a
 RAYLIB_SOURCES := $(wildcard ./vendor/raylib/*.c)
 RAYLIB_OBJECTS := $(RAYLIB_SOURCES:%.c=%.o)
 ./vendor/raylib/libraylib.a: ;
-	make -C ./vendor/raylib RAYLIB_SRC_PATH=. MACOSX_DEPLOYMENT_TARGET=10.9 PLATFORM=PLATFORM_DESKTOP
+	$(MAKE) -C ./vendor/raylib RAYLIB_SRC_PATH=. MACOSX_DEPLOYMENT_TARGET=10.9 PLATFORM=PLATFORM_DESKTOP
 LFLAGS += -L./vendor/raylib -lraylib
 LIBS += ./vendor/raylib/libraylib.a
 INCLUDE += -I./vendor/raylib
@@ -164,6 +168,10 @@ NUKLEAR_OBJECTS := $(NUKLEAR_SOURCES:%.c=%.o)
 LFLAGS += -L./vendor/Nuklear -lnuklear
 LIBS += ./vendor/Nuklear/libnuklear.a
 INCLUDE += -I./vendor/Nuklear
+
+ifeq ($(ARCH),WIN)
+  LFLAGS += -lopengl32 -lgdi32 -lole32 -lcomdlg32
+endif
 
 $(BINDIR)/$(TARGET): $(OBJECTS) $(LIBS)
 	$(LINKER) $@ $(OBJECTS) $(LFLAGS)

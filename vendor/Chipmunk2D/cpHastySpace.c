@@ -48,7 +48,10 @@ typedef struct
 } pthread_cond_t;
 typedef CRITICAL_SECTION pthread_mutex_t;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 typedef struct {} pthread_condattr_t; // Dummy;
+#pragma GCC diagnostic pop
 
 int pthread_cond_destroy(pthread_cond_t* cv)
 {
@@ -143,7 +146,10 @@ int pthread_cond_wait(pthread_cond_t* cv, pthread_mutex_t* external_mutex)
 	return result == WAIT_TIMEOUT ? ETIMEDOUT : 0;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 typedef struct {} pthread_mutexattr_t; //< Dummy
+#pragma GCC diagnostic pop
 
 int pthread_mutex_init(pthread_mutex_t* mutex, const pthread_mutexattr_t* attr)
 {
@@ -169,7 +175,10 @@ int pthread_mutex_unlock(pthread_mutex_t* mutex)
 	return 0;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 typedef struct {} pthread_attr_t;
+#pragma GCC diagnostic pop
 
 typedef struct
 {
