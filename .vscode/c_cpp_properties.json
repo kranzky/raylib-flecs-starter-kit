@@ -18,6 +18,25 @@
             "cStandard": "gnu17",
             "cppStandard": "gnu++14",
             "intelliSenseMode": "macos-gcc-x64"
+        },
+        {
+            "name": "Win32",
+            "includePath": [
+                "${default}",
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/vendor/flecs",
+                "${workspaceFolder}/vendor/raylib",
+                "${workspaceFolder}/vendor/cJSON",
+                "${workspaceFolder}/vendor/Chipmunk2D/chipmunk",
+                "${workspaceFolder}/vendor/Nuklear",
+                "${workspaceFolder}/vendor/tinyfiledialogs"
+            ],
+            "defines": [],
+            "macFrameworkPath": [],
+            "compilerPath": "C:/Users/kranzky/dev/mingw32/bin/gcc",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "windows-gcc-x86"
         }
     ],
     "version": 4

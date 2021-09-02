@@ -8,6 +8,9 @@
       "group": {
         "kind": "build",
         "isDefault": true
+      },
+      "windows": {
+        "command": "mingw32-make"
       }
     }
   ]
