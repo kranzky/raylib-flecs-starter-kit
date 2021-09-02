@@ -8,6 +8,7 @@
 #include "../components/nuklear.h"
 #include "../components/window.h"
 #include "../components/widget.h"
+#include "../components/renderable.h"
 
 #include "component.h"
 
@@ -32,4 +33,5 @@ void component_manager_init(ecs_world_t *world)
   ECS_COMPONENT_DEFINE(world, Nuklear);
   ECS_COMPONENT_DEFINE(world, Window);
   ECS_COMPONENT_DEFINE(world, Widget);
+  ECS_COMPONENT_DEFINE(world, Renderable);
 }

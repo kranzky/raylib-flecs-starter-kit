@@ -9,7 +9,7 @@
 void init_splash(ecs_world_t *world, const Scene *scene, ecs_entity_t parent)
 {
   Vector2 position = {RASTER_WIDTH * 0.5, RASTER_HEIGHT * 0.5};
-  entity_manager_spawn_label(world, parent, FONT_CLOVER, "Splash Screen", ALIGN_CENTRE, VALIGN_MIDDLE, 50, position, PURPLE);
+  entity_manager_spawn_image(world, parent, TEXTURE_LOGO, 1, (Vector2){0.5 * RASTER_WIDTH, 0.5 * RASTER_HEIGHT}, WHITE);
 }
 
 //------------------------------------------------------------------------------

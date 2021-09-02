@@ -4,5 +4,6 @@
 #include <flecs.h>
 
 void render_labels(ecs_iter_t *it);
+void render_images(ecs_iter_t *it);
 
 #endif

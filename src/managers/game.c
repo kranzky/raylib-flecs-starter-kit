@@ -3,7 +3,6 @@
 #include <raylib.h>
 #include <flecs.h>
 #include <chipmunk.h>
-#include <tinyfiledialogs.h>
 
 #include "../components/settings.h"
 
@@ -128,9 +127,6 @@ void game_manager_init(void)
   _init_raylib();
   _show_loading_screen();
   _init_managers();
-#ifdef DEBUG
-  tinyfd_notifyPopup(GAME_NAME, "Ready to rock!", "info");
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -147,7 +143,7 @@ void game_manager_loop(void)
   entity_manager_spawn_scene(_world, SCENE_SPLASH);
 #endif
 #ifdef DEBUG
-  entity_manager_spawn_scene(_world, SCENE_TITLE);
+  entity_manager_spawn_scene(_world, SCENE_SPLASH);
 #endif
 
   while (running)

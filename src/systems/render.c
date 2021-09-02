@@ -3,6 +3,7 @@
 #include "../components/label.h"
 #include "../components/spatial.h"
 #include "../components/tinted.h"
+#include "../components/renderable.h"
 
 #include "../managers/texture.h"
 
@@ -48,6 +49,24 @@ void render_labels(ecs_iter_t *it)
       TraceLog(LOG_WARNING, "bad text valign");
     }
     DrawTextEx(*label[i].font, label[i].text, position, label[i].size, 0, tinted[i].tint);
+  }
+  EndTextureMode();
+}
+
+//------------------------------------------------------------------------------
+
+void render_images(ecs_iter_t *it)
+{
+  Renderable *renderable = ecs_column(it, Renderable, 1);
+  Spatial *spatial = ecs_column(it, Spatial, 2);
+  Tinted *tinted = ecs_column(it, Tinted, 3);
+  RenderTexture2D *playfield = texture_manager_playfield();
+  BeginTextureMode(*playfield);
+  for (int i = 0; i < it->count; ++i)
+  {
+    Rectangle dst = {spatial[i].position.x, spatial[i].position.y, renderable[i].scale * renderable[i].src.width, renderable[i].scale * renderable[i].src.height};
+    Vector2 origin = {0.5 * dst.width, 0.5 * dst.height};
+    DrawTexturePro(*renderable[i].texture, renderable[i].src, dst, origin, spatial[i].rotation, tinted[i].tint);
   }
   EndTextureMode();
 }

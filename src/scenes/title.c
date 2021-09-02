@@ -67,8 +67,10 @@ void init_title(ecs_world_t *world, const Scene *scene, ecs_entity_t parent)
 bool update_title(ecs_world_t *world, const Scene *scene, const Input *input, const Settings *settings, ecs_entity_t parent)
 {
   _quit |= input->quit;
+#ifdef RELEASE
   if (_quit)
     _quit = (tinyfd_messageBox(GAME_NAME, "Really quit?", "yesno", "warning", 1) == 1);
+#endif
   if (_quit || _play)
     return false;
   return true;
