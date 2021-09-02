@@ -11,6 +11,7 @@
 
 static bool _quit = false;
 static bool _play = false;
+static ecs_entity_t _music = 0;
 
 //==============================================================================
 
@@ -38,7 +39,8 @@ static void _set_volume(Widget *widget)
 void init_title(ecs_world_t *world, const Scene *scene, ecs_entity_t parent)
 {
   Vector2 position = {RASTER_WIDTH * 0.5, RASTER_HEIGHT * 0.5};
-  entity_manager_spawn_label(world, parent, FONT_CLOVER, "Title Screen", ALIGN_CENTRE, VALIGN_MIDDLE, 50, position, ORANGE);
+  entity_manager_spawn_label(world, parent, FONT_CLOVER, "Title Screen", ALIGN_CENTRE, VALIGN_TOP, 50, position, ORANGE);
+  _music = entity_manager_spawn_music(world, MUSIC_ROCK_VOMIT, 1);
   ecs_entity_t window = nuklear_window(world, parent, "Hello Window", 100, 100, 300, 200);
   nuklear_label(world, window, "Mister Label");
   nuklear_separator(world, window);
@@ -80,6 +82,8 @@ bool update_title(ecs_world_t *world, const Scene *scene, const Input *input, co
 
 void fini_title(ecs_world_t *world, const Scene *scene, ecs_entity_t parent)
 {
+  // TODO: make music fade out instead
+  ecs_delete(world, _music);
   if (_quit)
     ecs_quit(world);
   else

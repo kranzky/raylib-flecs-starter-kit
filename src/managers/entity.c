@@ -6,6 +6,7 @@
 #include "../components/nuklear.h"
 #include "../components/renderable.h"
 #include "../components/audible.h"
+#include "../components/track.h"
 
 #include "entity.h"
 
@@ -81,5 +82,15 @@ ecs_entity_t entity_manager_spawn_sound(ecs_world_t *world, ecs_entity_t parent,
   Sound *sound = sound_manager_get(id);
   ecs_set(world, entity, Audible, {.sound = sound, .volume = volume});
   ecs_add_pair(world, entity, EcsChildOf, parent);
+  return entity;
+}
+
+//------------------------------------------------------------------------------
+
+ecs_entity_t entity_manager_spawn_music(ecs_world_t *world, MusicName id, float volume)
+{
+  ecs_entity_t entity = ecs_new(world, 0);
+  Music *music = music_manager_get(id);
+  ecs_set(world, entity, Track, {.music = music, .volume = volume});
   return entity;
 }

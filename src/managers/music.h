@@ -11,6 +11,6 @@ typedef enum MusicName
 } MusicName;
 
 void music_manager_init(ecs_world_t *world);
-Music music_manager_get(MusicName id);
+Music * music_manager_get(MusicName id);
 
 #endif

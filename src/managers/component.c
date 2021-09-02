@@ -10,6 +10,7 @@
 #include "../components/widget.h"
 #include "../components/renderable.h"
 #include "../components/audible.h"
+#include "../components/track.h"
 
 #include "component.h"
 
@@ -24,6 +25,7 @@ static void _fini(ecs_world_t *world, void *context)
 void component_manager_init(ecs_world_t *world)
 {
   ecs_atfini(world, _fini, NULL);
+
   ECS_COMPONENT_DEFINE(world, Scene);
   ECS_COMPONENT_DEFINE(world, Spatial);
   ECS_COMPONENT_DEFINE(world, Label);
@@ -36,4 +38,5 @@ void component_manager_init(ecs_world_t *world)
   ECS_COMPONENT_DEFINE(world, Widget);
   ECS_COMPONENT_DEFINE(world, Renderable);
   ECS_COMPONENT_DEFINE(world, Audible);
+  ECS_COMPONENT_DEFINE(world, Track);
 }

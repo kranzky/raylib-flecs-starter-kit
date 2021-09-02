@@ -32,7 +32,7 @@ void music_manager_init(ecs_world_t *world)
 
 //------------------------------------------------------------------------------
 
-Music music_manager_get(MusicName id)
+Music* music_manager_get(MusicName id)
 {
-  return _music[id];
+  return &_music[id];
 }

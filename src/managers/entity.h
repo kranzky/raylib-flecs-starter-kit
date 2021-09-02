@@ -10,6 +10,7 @@
 #include "../managers/font.h"
 #include "../managers/texture.h"
 #include "../managers/sound.h"
+#include "../managers/music.h"
 
 ECS_TYPE_DECLARE(SceneType);
 ECS_TYPE_DECLARE(LabelType);
@@ -24,5 +25,6 @@ ecs_entity_t entity_manager_spawn_label(ecs_world_t *world, ecs_entity_t parent,
 ecs_entity_t entity_manager_spawn_debug(ecs_world_t *world, const char *message);
 ecs_entity_t entity_manager_spawn_image(ecs_world_t *world, ecs_entity_t parent, TextureName id, float scale, Vector2 position, Color tint);
 ecs_entity_t entity_manager_spawn_sound(ecs_world_t *world, ecs_entity_t parent, SoundName id, float volume);
+ecs_entity_t entity_manager_spawn_music(ecs_world_t *world, MusicName id, float volume);
 
 #endif
