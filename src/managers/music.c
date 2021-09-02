@@ -41,6 +41,15 @@ Music *music_manager_get(MusicName id)
 
 //------------------------------------------------------------------------------
 
+void music_manager_volume(ecs_world_t *world, ecs_entity_t id, float volume)
+{
+  Track *track = ecs_get_mut(world, id, Track, NULL);
+  track->volume = volume;
+  ecs_modified(world, id, Track);
+}
+
+//------------------------------------------------------------------------------
+
 void music_manager_mute(ecs_world_t *world, ecs_entity_t id)
 {
   Track *track = ecs_get_mut(world, id, Track, NULL);

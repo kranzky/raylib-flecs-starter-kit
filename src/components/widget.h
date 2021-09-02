@@ -17,7 +17,7 @@ typedef struct Widget
   WidgetType type;
   const char *name;
   float value;
-  void (*callback)(struct Widget *widget);
+  void (*callback)(ecs_world_t *world, struct Widget *widget);
 } Widget;
 
 ECS_COMPONENT_DECLARE(Widget);

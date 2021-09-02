@@ -71,11 +71,11 @@ void nuklear_update(ecs_iter_t *it)
         break;
       case WIDGET_BUTTON:
         if (nk_button_label(nuklear, widget[i].name))
-          widget[i].callback(&widget[i]);
+          widget[i].callback(it->world, &widget[i]);
         break;
       case WIDGET_SLIDER:
         if (nk_slider_float(nuklear, 0, &widget[i].value, 100, 0.1))
-          widget[i].callback(&widget[i]);
+          widget[i].callback(it->world, &widget[i]);
         break;
       }
     }
@@ -150,7 +150,7 @@ static inline void _circle(const struct nk_command *command)
 static inline void _circle_filled(const struct nk_command_circle_filled *command)
 {
   Color color = _from_color(command->color);
-  DrawEllipse(command->x + 0.5 * command->w, command->y + 0.5 * command->h, 0.5 * command->w, 0.5 * command->h / 2, color);
+  DrawEllipse(command->x + 0.5 * command->w, command->y + 0.5 * command->h, 0.5 * command->w, 0.5 * command->h, color);
 }
 
 //------------------------------------------------------------------------------
@@ -213,7 +213,7 @@ static inline void _text(const struct nk_command_text *command)
   Rectangle rect = (Rectangle){command->x, command->y, command->w, command->h};
   DrawRectangleRec(rect, back);
   Vector2 position = (Vector2){command->x, command->y};
-  DrawTextEx(*font_manager_get(FONT_CLOVER), command->string, (Vector2){command->x, command->y}, size, 0.1 * size, fore);
+  DrawTextEx(*font_manager_get(FONT_CLOVER), command->string, position, size, 0.1 * size, fore);
 }
 
 //------------------------------------------------------------------------------

@@ -77,7 +77,7 @@ void nuklear_manager_init(ecs_world_t *world)
 ecs_entity_t nuklear_window(ecs_world_t *world, ecs_entity_t parent, const char *name, int x, int y, int width, int height)
 {
   ecs_entity_t entity = ecs_new(world, 0);
-  ecs_set(world, entity, Window, {.name = name, .bounds = (Rectangle){x, y, width, height}, .flags = NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_CLOSABLE | NK_WINDOW_SCALABLE | NK_WINDOW_TITLE});
+  ecs_set(world, entity, Window, {.name = name, .bounds = (Rectangle){x, y, width, height}, .flags = NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_TITLE});
   ecs_add_pair(world, entity, EcsChildOf, parent);
   return entity;
 }
@@ -94,7 +94,7 @@ ecs_entity_t nuklear_label(ecs_world_t *world, ecs_entity_t window, const char *
 
 //------------------------------------------------------------------------------
 
-ecs_entity_t nuklear_button(ecs_world_t *world, ecs_entity_t window, const char *name, void (*callback)(Widget *widget))
+ecs_entity_t nuklear_button(ecs_world_t *world, ecs_entity_t window, const char *name, void (*callback)(ecs_world_t *world, Widget *widget))
 {
   ecs_entity_t entity = ecs_new(world, 0);
   ecs_set(world, entity, Widget, {.type = WIDGET_BUTTON, .name = name, .callback = callback});
@@ -104,7 +104,7 @@ ecs_entity_t nuklear_button(ecs_world_t *world, ecs_entity_t window, const char 
 
 //------------------------------------------------------------------------------
 
-ecs_entity_t nuklear_slider(ecs_world_t *world, ecs_entity_t window, float value, void (*callback)(Widget *widget))
+ecs_entity_t nuklear_slider(ecs_world_t *world, ecs_entity_t window, float value, void (*callback)(ecs_world_t *world, Widget *widget))
 {
   ecs_entity_t entity = ecs_new(world, 0);
   ecs_set(world, entity, Widget, {.type = WIDGET_SLIDER, .value = value, .callback = callback});
