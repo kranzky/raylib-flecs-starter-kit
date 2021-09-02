@@ -82,8 +82,7 @@ bool update_title(ecs_world_t *world, const Scene *scene, const Input *input, co
 
 void fini_title(ecs_world_t *world, const Scene *scene, ecs_entity_t parent)
 {
-  // TODO: make music fade out instead
-  ecs_delete(world, _music);
+  music_manager_stop(world, _music);
   if (_quit)
     ecs_quit(world);
   else

@@ -21,7 +21,7 @@ void play_sounds(ecs_iter_t *it)
 
 //------------------------------------------------------------------------------
 
-static inline void _update_track(Track* track, float volume, float delta)
+static inline void _update_track(Track *track, float volume, float delta)
 {
   if (IsAudioDeviceReady())
   {
@@ -84,7 +84,8 @@ void play_music(ecs_iter_t *it)
       TraceLog(LOG_WARNING, "bad audio state");
       break;
     }
-    if (new_state != MAX_TRACKS) {
+    if (new_state != MAX_TRACKS)
+    {
       track[i].state = new_state;
       track[i].state_time = 0;
     }

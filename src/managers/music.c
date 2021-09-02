@@ -1,3 +1,5 @@
+#include "../components/track.h"
+
 #include "music.h"
 
 //==============================================================================
@@ -32,7 +34,37 @@ void music_manager_init(ecs_world_t *world)
 
 //------------------------------------------------------------------------------
 
-Music* music_manager_get(MusicName id)
+Music *music_manager_get(MusicName id)
 {
   return &_music[id];
+}
+
+//------------------------------------------------------------------------------
+
+void music_manager_mute(ecs_world_t *world, ecs_entity_t id)
+{
+  Track *track = ecs_get_mut(world, id, Track, NULL);
+  track->state = TRACK_MUTING;
+  track->state_time = 0;
+  ecs_modified(world, id, Track);
+}
+
+//------------------------------------------------------------------------------
+
+void music_manager_unmute(ecs_world_t *world, ecs_entity_t id)
+{
+  Track *track = ecs_get_mut(world, id, Track, NULL);
+  track->state = TRACK_UNMUTING;
+  track->state_time = 0;
+  ecs_modified(world, id, Track);
+}
+
+//------------------------------------------------------------------------------
+
+void music_manager_stop(ecs_world_t *world, ecs_entity_t id)
+{
+  Track *track = ecs_get_mut(world, id, Track, NULL);
+  track->state = TRACK_STOPPING;
+  track->state_time = 0;
+  ecs_modified(world, id, Track);
 }
