@@ -35,11 +35,7 @@ void sound_manager_init(ecs_world_t *world)
 
 //------------------------------------------------------------------------------
 
-void sound_manager_play(SoundName id, float volume)
+Sound *sound_manager_get(SoundName id)
 {
-  if (IsAudioDeviceReady())
-  {
-    SetSoundVolume(_sounds[id], volume);
-    PlaySound(_sounds[id]);
-  }
+  return &_sounds[id];
 }

@@ -5,6 +5,7 @@
 #include "../components/tinted.h"
 #include "../components/nuklear.h"
 #include "../components/renderable.h"
+#include "../components/audible.h"
 
 #include "entity.h"
 
@@ -68,6 +69,17 @@ ecs_entity_t entity_manager_spawn_image(ecs_world_t *world, ecs_entity_t parent,
   ecs_set(world, entity, Renderable, {.texture = texture, .scale = scale, .src = (Rectangle){0, 0, texture->width, texture->height}});
   ecs_set(world, entity, Spatial, {.position = position});
   ecs_set(world, entity, Tinted, {.tint = tint});
+  ecs_add_pair(world, entity, EcsChildOf, parent);
+  return entity;
+}
+
+//------------------------------------------------------------------------------
+
+ecs_entity_t entity_manager_spawn_sound(ecs_world_t *world, ecs_entity_t parent, SoundName id, float volume)
+{
+  ecs_entity_t entity = ecs_new(world, 0);
+  Sound *sound = sound_manager_get(id);
+  ecs_set(world, entity, Audible, {.sound = sound, .volume = volume});
   ecs_add_pair(world, entity, EcsChildOf, parent);
   return entity;
 }

@@ -4,6 +4,7 @@
 #include "../systems/render.h"
 #include "../systems/input.h"
 #include "../systems/nuklear.h"
+#include "../systems/audio.h"
 
 #ifdef DEBUG
 #include "../systems/debug.h"
@@ -33,6 +34,7 @@ void system_manager_init(ecs_world_t *world)
   ECS_SYSTEM(world, render_images, EcsOnStore, [in] Renderable, [in] Spatial, [in] Tinted);
   ECS_SYSTEM(world, render_labels, EcsOnStore, [in] Label, [in] Spatial, [in] Tinted);
   ECS_SYSTEM(world, nuklear_render, EcsOnStore, [inout] $Nuklear);
+  ECS_SYSTEM(world, play_sounds, EcsOnStore, [inout] Audible);
 
 #ifdef DEBUG
   ECS_SYSTEM(world, debug_input, EcsPostUpdate, [in] $Input, [out] $Debug, [out] :*);
