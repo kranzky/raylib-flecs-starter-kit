@@ -4,12 +4,30 @@
 #include "../components/spatial.h"
 #include "../components/tinted.h"
 #include "../components/renderable.h"
+#include "../components/scene.h"
 
 #include "../managers/texture.h"
 
 #include "render.h"
 
 //==============================================================================
+
+void render_scene(ecs_iter_t *it)
+{
+  Scene *scene = ecs_column(it, Scene, 1);
+  RenderTexture2D *playfield = texture_manager_playfield();
+  BeginTextureMode(*playfield);
+  for (int i = 0; i < it->count; ++i)
+  {
+    if (scene[i].state != SCENE_STATE_RUNNING)
+      continue;
+    if (scene[i].shader == NULL)
+      ClearBackground(scene[i].color);
+  }
+  EndTextureMode();
+}
+
+//------------------------------------------------------------------------------
 
 void render_labels(ecs_iter_t *it)
 {

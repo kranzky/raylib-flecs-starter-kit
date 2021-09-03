@@ -33,5 +33,5 @@ void shader_manager_init(ecs_world_t *world)
 
 Shader *shader_manager_get(ShaderName id)
 {
-  return &_shaders[id];
+  return (id == MAX_SHADERS) ? NULL : &_shaders[id];
 }

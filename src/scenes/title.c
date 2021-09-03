@@ -2,6 +2,8 @@
 
 #include "splash.h"
 
+#include "../systems/scene.h"
+
 #include "../managers/entity.h"
 #include "../managers/nuklear.h"
 
@@ -36,6 +38,13 @@ static void _set_volume(ecs_world_t *world, Widget *widget)
 
 //------------------------------------------------------------------------------
 
+void spawn_title(ecs_world_t *world)
+{
+  entity_manager_spawn_scene(world, SCENE_TITLE, GREEN, MAX_SHADERS);
+}
+
+//------------------------------------------------------------------------------
+
 void init_title(ecs_world_t *world, const Scene *scene, ecs_entity_t parent)
 {
   Vector2 position = {RASTER_WIDTH * 0.5, 150};
@@ -52,7 +61,7 @@ void init_title(ecs_world_t *world, const Scene *scene, ecs_entity_t parent)
 
 //------------------------------------------------------------------------------
 
-bool update_title(ecs_world_t *world, const Scene *scene, const Input *input, const Settings *settings, ecs_entity_t parent)
+bool update_title(ecs_world_t *world, const Scene *scene, const Input *input, const Settings *settings)
 {
   _quit |= input->quit;
 #ifdef RELEASE
@@ -66,11 +75,11 @@ bool update_title(ecs_world_t *world, const Scene *scene, const Input *input, co
 
 //------------------------------------------------------------------------------
 
-void fini_title(ecs_world_t *world, const Scene *scene, ecs_entity_t parent)
+void fini_title(ecs_world_t *world, const Scene *scene)
 {
   music_manager_stop(world, _music);
   if (_quit)
     ecs_quit(world);
   else
-    entity_manager_spawn_scene(world, SCENE_LEVEL);
+    spawn_scene(world, SCENE_LEVEL);
 }

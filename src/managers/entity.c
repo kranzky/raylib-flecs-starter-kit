@@ -31,10 +31,11 @@ void entity_manager_init(ecs_world_t *world)
 
 //------------------------------------------------------------------------------
 
-ecs_entity_t entity_manager_spawn_scene(ecs_world_t *world, SceneName id)
+ecs_entity_t entity_manager_spawn_scene(ecs_world_t *world, SceneName id, Color color, ShaderName shader_id)
 {
   ecs_entity_t entity = ecs_new(world, SceneType);
-  ecs_set(world, entity, Scene, {.id = id});
+  Shader *shader = shader_manager_get(shader_id);
+  ecs_set(world, entity, Scene, {.id = id, .color = color, .shader = shader});
   return entity;
 }
 

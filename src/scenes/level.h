@@ -7,8 +7,9 @@
 #include "../components/input.h"
 #include "../components/settings.h"
 
-void init_level(ecs_world_t *world, const Scene *scene, ecs_entity_t parent);
-bool update_level(ecs_world_t *world, const Scene *scene, const Input *input, const Settings *settings, ecs_entity_t parent);
-void fini_level(ecs_world_t *world, const Scene *scene, ecs_entity_t parent);
+void spawn_level(ecs_world_t *world);
+void init_level(ecs_world_t *world, ecs_entity_t parent);
+bool update_level(ecs_world_t *world, const Scene *scene, const Input *input, const Settings *settings);
+void fini_level(ecs_world_t *world, const Scene *scene);
 
 #endif

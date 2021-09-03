@@ -2,6 +2,7 @@
 #define SCENE_COMPONENT_H
 
 #include <flecs.h>
+#include <raylib.h>
 
 typedef enum SceneName
 {
@@ -25,6 +26,8 @@ typedef struct Scene
   SceneName id;
   SceneState state;
   float time;
+  Color color;
+  Shader *shader;
 } Scene;
 
 ECS_COMPONENT_DECLARE(Scene);

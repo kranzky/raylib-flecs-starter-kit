@@ -5,6 +5,7 @@
 #include <chipmunk.h>
 
 #include "../components/settings.h"
+#include "../systems/scene.h"
 
 #include "texture.h"
 #include "sound.h"
@@ -140,25 +141,19 @@ void game_manager_loop(void)
   SetWindowIcon(GetTextureData(*texture_manager_get(TEXTURE_SHIP)));
 
 #ifdef RELEASE
-  entity_manager_spawn_scene(_world, SCENE_SPLASH);
+  spawn_scene(_world, SCENE_SPLASH);
 #endif
 #ifdef DEBUG
-  entity_manager_spawn_scene(_world, SCENE_SPLASH);
+  spawn_scene(_world, SCENE_SPLASH);
 #endif
 
   while (running)
   {
-    BeginTextureMode(*playfield);
-    ClearBackground(BLUE);
-    EndTextureMode();
-
     cpSpaceStep(_space, GetFrameTime());
     running = ecs_progress(_world, GetFrameTime());
-
-    const Settings *settings = ecs_singleton_get(_world, Settings);
-
     BeginDrawing();
-    ClearBackground(DARKGRAY);
+    ClearBackground(BLACK);
+    const Settings *settings = ecs_singleton_get(_world, Settings);
     DrawTexturePro(playfield->texture, src, settings->bounds, (Vector2){0}, 0.0f, WHITE);
     EndDrawing();
   }
