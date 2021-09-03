@@ -72,6 +72,8 @@ void update_scene(ecs_iter_t *it)
   Scene *scene = ecs_column(it, Scene, 1);
   Input *input = ecs_column(it, Input, 2);
   Settings *settings = ecs_column(it, Settings, 3);
+  if (input->toggle_fullscreen)
+    ToggleFullscreen();
   for (int i = 0; i < it->count; ++i)
   {
     switch (scene[i].state)
