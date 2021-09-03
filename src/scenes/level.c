@@ -17,7 +17,6 @@ void spawn_level(ecs_world_t *world)
 
 void init_level(ecs_world_t *world, ecs_entity_t parent)
 {
-  // TODO: get center from display raster
   Vector2 position = {RASTER_WIDTH * 0.5, RASTER_HEIGHT * 0.5};
   entity_manager_spawn_label(world, parent, FONT_CLOVER, "Yay Play", ALIGN_CENTRE, VALIGN_MIDDLE, 50, position, GREEN);
 }

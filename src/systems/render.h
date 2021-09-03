@@ -4,6 +4,7 @@
 #include <flecs.h>
 
 void refresh_display(ecs_iter_t *it);
+void update_transition(ecs_iter_t *it);
 void render_scene(ecs_iter_t *it);
 void render_labels(ecs_iter_t *it);
 void render_images(ecs_iter_t *it);

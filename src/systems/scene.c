@@ -6,6 +6,8 @@
 #include "../components/input.h"
 #include "../components/settings.h"
 
+#include "../managers/entity.h"
+
 #include "../scenes/splash.h"
 #include "../scenes/title.h"
 #include "../scenes/level.h"
@@ -36,26 +38,32 @@ JumpTarget _targets[] = {[SCENE_TITLE] = {.spawn = spawn_title, .init = init_tit
 static inline void _init(ecs_world_t *world, Scene *scene, ecs_entity_t entity)
 {
   _targets[scene->id].init(world, entity);
+  entity_manager_spawn_transition(world, TRANSITION_FADE_IN);
   scene->state = SCENE_STATE_RUNNING;
-  // SPAWN black overlay which will fade out over time
+  scene->time = 0;
 }
 
 //------------------------------------------------------------------------------
 
 static inline void _update(ecs_world_t *world, Scene *scene, const Input *input, const Settings *settings)
 {
-  if (!_targets[scene->id].update(world, scene, input, settings))
+  if (scene->time > 0.3 && !_targets[scene->id].update(world, scene, input, settings))
+  {
     scene->state = SCENE_STATE_STOPPING;
+    scene->time = 0;
+    entity_manager_spawn_transition(world, TRANSITION_FADE_OUT);
+  }
 }
 
 //------------------------------------------------------------------------------
 
 static inline void _fini(ecs_world_t *world, Scene *scene, ecs_entity_t entity)
 {
-  // SPAWN black overlay which will fade in over time
-  // delete entities and call fini once it's done
-  _targets[scene->id].fini(world, scene);
-  ecs_delete(world, entity);
+  if (scene->time > 0.3)
+  {
+    _targets[scene->id].fini(world, scene);
+    ecs_delete(world, entity);
+  }
 }
 
 //==============================================================================
@@ -83,7 +91,6 @@ void update_scene(ecs_iter_t *it)
       break;
     case SCENE_STATE_RUNNING:
       _update(it->world, &scene[i], input, settings);
-      scene[i].time += it->delta_time;
       break;
     case SCENE_STATE_STOPPING:
       _fini(it->world, &scene[i], it->entities[i]);
@@ -91,6 +98,7 @@ void update_scene(ecs_iter_t *it)
     default:
       TraceLog(LOG_WARNING, "bad scene state");
       break;
-    }
+    };
+    scene[i].time += it->delta_time;
   }
 }

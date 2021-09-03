@@ -36,6 +36,31 @@ void refresh_display(ecs_iter_t *it)
 
 //------------------------------------------------------------------------------
 
+void update_transition(ecs_iter_t *it)
+{
+  Transition *transition = ecs_column(it, Transition, 1);
+  Display *display = ecs_column(it, Display, 2);
+  for (int i = 0; i < it->count; ++i)
+  {
+    switch (transition[i].id)
+    {
+    case TRANSITION_FADE_IN:
+      transition[i].fade = Clamp(transition[i].time * 4, 0, 1);
+      break;
+    case TRANSITION_FADE_OUT:
+      transition[i].fade = Clamp(1 - transition[i].time * 4, 0, 1);
+      break;
+    };
+    display->background.a = 255 * transition[i].fade;
+    if (transition[i].time > 1)
+      ecs_delete(it->world, it->entities[i]);
+    else
+      transition[i].time += it->delta_time;
+  }
+}
+
+//------------------------------------------------------------------------------
+
 void render_scene(ecs_iter_t *it)
 {
   Scene *scene = ecs_column(it, Scene, 1);

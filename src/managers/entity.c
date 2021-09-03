@@ -95,3 +95,12 @@ ecs_entity_t entity_manager_spawn_music(ecs_world_t *world, MusicName id, float 
   ecs_set(world, entity, Track, {.music = music, .volume = volume});
   return entity;
 }
+
+//------------------------------------------------------------------------------
+
+ecs_entity_t entity_manager_spawn_transition(ecs_world_t *world, TransitionName id)
+{
+  ecs_entity_t entity = ecs_new(world, 0);
+  ecs_set(world, entity, Transition, {.id = id});
+  return entity;
+}

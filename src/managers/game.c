@@ -119,13 +119,19 @@ static inline void _init_managers()
 static inline void _init_game()
 {
   SetWindowIcon(GetTextureData(*texture_manager_get(TEXTURE_SHIP)));
+  ecs_singleton_set(_world, Display, {.border = BLACK, .background = WHITE, .raster = {0, 0, RASTER_WIDTH, RASTER_HEIGHT}});
+}
+
+//------------------------------------------------------------------------------
+
+static inline void _start_game()
+{
 #ifdef RELEASE
   spawn_scene(_world, SCENE_SPLASH);
 #endif
 #ifdef DEBUG
-  spawn_scene(_world, SCENE_SPLASH);
+  spawn_scene(_world, SCENE_TITLE);
 #endif
-  ecs_singleton_set(_world, Display, {.border = BLACK, .background = WHITE, .raster = {0, 0, RASTER_WIDTH, RASTER_HEIGHT}});
 }
 
 //==============================================================================
@@ -144,11 +150,19 @@ void game_manager_init(void)
 void game_manager_loop(void)
 {
   bool running = true;
+  bool started = false;
+  float time = 0;
   while (running)
   {
     float delta = GetFrameTime();
     cpSpaceStep(_space, delta);
     running = ecs_progress(_world, delta);
+    time += delta;
+    if (!started && time > 1)
+    {
+      _start_game();
+      started = true;
+    }
   }
 }
 

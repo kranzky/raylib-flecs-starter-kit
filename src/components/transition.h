@@ -7,18 +7,14 @@
 typedef enum TransitionName
 {
   TRANSITION_FADE_IN,
-  TRANSITION_DISPLAY,
   TRANSITION_FADE_OUT,
-  TRANSITION_DESTROY,
   MAX_TRANSITIONS
 } TransitionName;
 
 typedef struct Transition
 {
   TransitionName id;
-  Color tint;
   float fade;
-  float show;
   float time;
 } Transition;
 
