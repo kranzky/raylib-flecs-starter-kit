@@ -4,7 +4,7 @@
 #include <flecs.h>
 #include <chipmunk.h>
 
-#include "../components/settings.h"
+#include "../components/display.h"
 #include "../systems/scene.h"
 
 #include "texture.h"
@@ -85,12 +85,7 @@ static inline void _init_raylib()
 
   InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_NAME);
   InitAudioDevice();
-}
 
-//------------------------------------------------------------------------------
-
-static inline void _show_loading_screen()
-{
   for (int i = 0; i < 2; ++i)
   {
     BeginDrawing();
@@ -119,15 +114,29 @@ static inline void _init_managers()
   system_manager_init(_world);
 }
 
+//------------------------------------------------------------------------------
+
+static inline void _init_game()
+{
+  SetWindowIcon(GetTextureData(*texture_manager_get(TEXTURE_SHIP)));
+#ifdef RELEASE
+  spawn_scene(_world, SCENE_SPLASH);
+#endif
+#ifdef DEBUG
+  spawn_scene(_world, SCENE_SPLASH);
+#endif
+  ecs_singleton_set(_world, Display, {.border = BLACK, .background = WHITE, .raster = {0, 0, RASTER_WIDTH, RASTER_HEIGHT}});
+}
+
 //==============================================================================
 
 void game_manager_init(void)
 {
-  _init_chipmunk();
-  _init_flecs();
   _init_raylib();
-  _show_loading_screen();
+  _init_flecs();
+  _init_chipmunk();
   _init_managers();
+  _init_game();
 }
 
 //------------------------------------------------------------------------------
@@ -135,27 +144,11 @@ void game_manager_init(void)
 void game_manager_loop(void)
 {
   bool running = true;
-  RenderTexture2D *playfield = texture_manager_playfield();
-  Rectangle src = {0.0f, 0.0f, (float)RASTER_WIDTH, (float)-RASTER_HEIGHT};
-
-  SetWindowIcon(GetTextureData(*texture_manager_get(TEXTURE_SHIP)));
-
-#ifdef RELEASE
-  spawn_scene(_world, SCENE_SPLASH);
-#endif
-#ifdef DEBUG
-  spawn_scene(_world, SCENE_SPLASH);
-#endif
-
   while (running)
   {
-    cpSpaceStep(_space, GetFrameTime());
-    running = ecs_progress(_world, GetFrameTime());
-    BeginDrawing();
-    ClearBackground(BLACK);
-    const Settings *settings = ecs_singleton_get(_world, Settings);
-    DrawTexturePro(playfield->texture, src, settings->bounds, (Vector2){0}, 0.0f, WHITE);
-    EndDrawing();
+    float delta = GetFrameTime();
+    cpSpaceStep(_space, delta);
+    running = ecs_progress(_world, delta);
   }
 }
 

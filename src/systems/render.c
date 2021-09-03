@@ -5,12 +5,36 @@
 #include "../components/tinted.h"
 #include "../components/renderable.h"
 #include "../components/scene.h"
+#include "../components/settings.h"
+#include "../components/transition.h"
+#include "../components/display.h"
 
 #include "../managers/texture.h"
 
 #include "render.h"
 
 //==============================================================================
+
+void refresh_display(ecs_iter_t *it)
+{
+  Display *display = ecs_column(it, Display, 1);
+
+  display->window.width = GetScreenWidth();
+  display->window.height = GetScreenHeight();
+#ifdef MAC
+  display->window.width *= GetWindowScaleDPI().x;
+  display->window.height *= GetWindowScaleDPI().y;
+#endif
+
+  display->scale = MIN(display->window.width / display->raster.width, display->window.height / display->raster.height);
+  display->screen = (Rectangle){
+      (display->window.width - (display->raster.width * display->scale)) * 0.5f,
+      (display->window.height - (display->raster.height * display->scale)) * 0.5f,
+      display->raster.width * display->scale,
+      display->raster.height * display->scale};
+}
+
+//------------------------------------------------------------------------------
 
 void render_scene(ecs_iter_t *it)
 {
@@ -94,4 +118,18 @@ void render_images(ecs_iter_t *it)
     DrawTexturePro(*renderable[i].texture, renderable[i].src, dst, origin, spatial[i].rotation, tinted[i].tint);
   }
   EndTextureMode();
+}
+
+//------------------------------------------------------------------------------
+
+void composite_display(ecs_iter_t *it)
+{
+  Display *display = ecs_column(it, Display, 1);
+  RenderTexture2D *playfield = texture_manager_playfield();
+  BeginDrawing();
+  ClearBackground(display->border);
+  Rectangle src = display->raster;
+  src.height *= -1;
+  DrawTexturePro(playfield->texture, src, display->screen, Vector2Zero(), 0, display->background);
+  EndDrawing();
 }

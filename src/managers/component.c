@@ -11,6 +11,8 @@
 #include "../components/renderable.h"
 #include "../components/audible.h"
 #include "../components/track.h"
+#include "../components/transition.h"
+#include "../components/display.h"
 
 #include "component.h"
 
@@ -39,4 +41,6 @@ void component_manager_init(ecs_world_t *world)
   ECS_COMPONENT_DEFINE(world, Renderable);
   ECS_COMPONENT_DEFINE(world, Audible);
   ECS_COMPONENT_DEFINE(world, Track);
+  ECS_COMPONENT_DEFINE(world, Transition);
+  ECS_COMPONENT_DEFINE(world, Display);
 }

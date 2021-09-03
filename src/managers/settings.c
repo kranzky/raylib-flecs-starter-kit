@@ -23,7 +23,7 @@ static void _load_settings(ecs_world_t *world)
 
 //------------------------------------------------------------------------------
 
-static void _save_bool(Settings *settings, unsigned int slot, bool value)
+static void _save_bool(const Settings *settings, unsigned int slot, bool value)
 {
   SaveStorageValue(slot, value ? 1 : 0);
 }
@@ -31,7 +31,7 @@ static void _save_bool(Settings *settings, unsigned int slot, bool value)
 //------------------------------------------------------------------------------
 static void _save_settings(ecs_world_t *world)
 {
-  Settings *settings = ecs_singleton_get_mut(world, Settings);
+  const Settings *settings = ecs_singleton_get(world, Settings);
   _save_bool(settings, 0, settings->music);
   _save_bool(settings, 1, settings->fullscreen);
 }

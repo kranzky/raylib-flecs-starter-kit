@@ -6,7 +6,8 @@
     "__locale": "c",
     "ios": "c",
     "entity.h": "c",
-    "tinyfiledialogs.h": "c"
+    "tinyfiledialogs.h": "c",
+    "transition.h": "c"
   },
   "C_Cpp.default.includePath": [],
   "files.eol": "\n"
