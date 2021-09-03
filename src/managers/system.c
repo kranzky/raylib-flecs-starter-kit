@@ -30,8 +30,8 @@ void system_manager_init(ecs_world_t *world)
   ECS_SYSTEM(world, refresh_display, EcsOnStore, [out] $Display);
   ECS_SYSTEM(world, process_input, EcsPreUpdate, [out] $Input, [inout] $Settings, [in] $Display);
   ECS_SYSTEM(world, nuklear_input, EcsPreUpdate, [inout] $Nuklear, [in] $Input);
-  ECS_SYSTEM(world, update_scene, EcsOnUpdate, [inout] Scene, [in] $Input, [inout] $Settings, [out] :*);
   ECS_SYSTEM(world, nuklear_update, EcsOnUpdate, [inout] $Nuklear, [in] PARENT:Window, [inout] ?Widget);
+  ECS_SYSTEM(world, update_scene, EcsOnUpdate, [inout] Scene, [in] $Input, [inout] $Settings, [out] :*);
 #ifdef DEBUG
   ECS_SYSTEM(world, debug_input, EcsPostUpdate, [in] $Input, [out] $Debug, [out] :*);
   ECS_SYSTEM(world, debug_scene, EcsPostUpdate, [in] Scene, [out] $Debug, [out] :*);

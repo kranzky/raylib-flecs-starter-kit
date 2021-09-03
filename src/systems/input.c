@@ -18,7 +18,7 @@ void process_input(ecs_iter_t *it)
   Display *display = ecs_column(it, Display, 3);
   *input = (Input){0};
 
-  input->quit |= IsKeyPressed(KEY_ESCAPE);
+  input->quit |= WindowShouldClose();
   input->quit |= IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_Q);
   input->quit |= IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_W);
   input->toggle_fullscreen = IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_F);

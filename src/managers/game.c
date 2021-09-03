@@ -158,4 +158,8 @@ void game_manager_fini(void)
 {
   ecs_fini(_world);
   _world = NULL;
+#ifdef RELEASE
+  SetTraceLogLevel(LOG_INFO);
+#endif
+  TraceLog(LOG_INFO, "Thank you for playing %s!", GAME_NAME);
 }
