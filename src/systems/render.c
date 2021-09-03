@@ -26,7 +26,7 @@ void render_scene(ecs_iter_t *it)
     else
     {
       BeginShaderMode(*scene[i].shader);
-      // TODO: SetShaderValue
+      SetShaderValue(*scene[i].shader, 0, &scene[i].time, SHADER_UNIFORM_FLOAT);
       DrawTextureEx(playfield->texture, (Vector2){0}, 0, 1, scene[i].color);
       EndShaderMode();
     }
