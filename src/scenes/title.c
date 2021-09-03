@@ -40,12 +40,12 @@ static void _set_volume(ecs_world_t *world, Widget *widget)
 
 void spawn_title(ecs_world_t *world)
 {
-  entity_manager_spawn_scene(world, SCENE_TITLE, GREEN, MAX_SHADERS);
+  entity_manager_spawn_scene(world, SCENE_TITLE, DARKGRAY, MAX_SHADERS);
 }
 
 //------------------------------------------------------------------------------
 
-void init_title(ecs_world_t *world, const Scene *scene, ecs_entity_t parent)
+void init_title(ecs_world_t *world, ecs_entity_t parent)
 {
   Vector2 position = {RASTER_WIDTH * 0.5, 150};
   entity_manager_spawn_label(world, parent, FONT_CLOVER, "Title Screen", ALIGN_CENTRE, VALIGN_TOP, 50, position, ORANGE);

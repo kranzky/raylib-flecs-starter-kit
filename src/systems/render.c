@@ -23,6 +23,13 @@ void render_scene(ecs_iter_t *it)
       continue;
     if (scene[i].shader == NULL)
       ClearBackground(scene[i].color);
+    else
+    {
+      BeginShaderMode(*scene[i].shader);
+      // TODO: SetShaderValue
+      DrawTextureEx(playfield->texture, (Vector2){0}, 0, 1, scene[i].color);
+      EndShaderMode();
+    }
   }
   EndTextureMode();
 }
