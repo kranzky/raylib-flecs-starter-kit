@@ -382,6 +382,10 @@ ifeq ($(PLATFORM),PLATFORM_DESKTOP)
     endif
 endif
 
+ifeq ($(PLATFORM_OS),OSX)
+	CFLAGS += -arch x86_64 -arch arm64
+endif
+
 # Define include paths for required headers
 # NOTE: Several external required libraries (stb and others)
 INCLUDE_PATHS = -I. -Iexternal/glfw/include -Iexternal/glfw/deps/mingw

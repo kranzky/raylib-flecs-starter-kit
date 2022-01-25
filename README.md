@@ -49,4 +49,4 @@ win/.itch.toml
 
 ## Copyright
 
-Copyright (c) 2021 Jason Hutchens. See UNLICENSE for further details.
+Copyright (c) 2022 Jason Hutchens. See UNLICENSE for further details.

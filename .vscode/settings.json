@@ -10,5 +10,6 @@
     "transition.h": "c"
   },
   "C_Cpp.default.includePath": [],
-  "files.eol": "\n"
+  "files.eol": "\n",
+  "cmake.configureOnOpen": false
 }

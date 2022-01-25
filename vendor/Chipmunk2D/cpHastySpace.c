@@ -339,7 +339,7 @@ cpArbiterApplyImpulse_NEON(cpArbiter *arb)
 		cpFloatx2_t vrt_tmp = vmul(vadd(vr, surface_vr), t);
 		cpFloatx2_t vrt = vpadd(vrt_tmp, vrt_tmp);
 		
-		cpFloatx2_t jtOld = {}; jtOld = vset_lane(con->jtAcc, jtOld, 0);
+		cpFloatx2_t jtOld = {0}; jtOld = vset_lane(con->jtAcc, jtOld, 0);
 		cpFloatx2_t jtMax = vrev(vmul_n(jbn_jn, friction));
 		cpFloatx2_t jt = vmul_n(vrt, -con->tMass);
 		jt = vmax(vneg(jtMax), vmin(vadd(jtOld, jt), jtMax));

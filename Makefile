@@ -49,8 +49,10 @@ ITCHARCH ?= mac
 ifeq ($(ARCH),MAC)
   ITCHARCH = mac
   CFLAGS += -DOSX -mmacosx-version-min=10.9
+  CFLAGS += -arch x86_64 -arch arm64
   LFLAGS += -framework CoreVideo -framework IOKit -framework Cocoa
   LFLAGS += -framework GLUT -framework OpenGL
+  LFLAGS += -arch x86_64 -arch arm64
   ifeq ($(BUILD),RELEASE)
     BINDIR = mac/StarterKit.app/Contents/MacOS
     RESDIR = $(BINDIR)/res
@@ -145,7 +147,7 @@ CHIPMUNK_OBJECTS := $(CHIPMUNK_SOURCES:%.c=%.o)
 	$(AR) rcs ./vendor/Chipmunk2D/libchipmunk.a $(CHIPMUNK_OBJECTS)
 LFLAGS += -L./vendor/Chipmunk2D -lchipmunk
 LIBS += ./vendor/Chipmunk2D/libchipmunk.a
-INCLUDE += -I./vendor/Chipmunk2D/chipmunk
+INCLUDE += -I./vendor/Chipmunk2D/chipmunk -I./vendor/Chipmunk2D
 
 tinyfiledialogs: ./vendor/tinyfiledialogs/libtinyfiledialogs.a
 TINYFILEDIALOGS_SOURCES := $(wildcard ./vendor/tinyfiledialogs/*.c)
@@ -189,7 +191,7 @@ ifeq ($(BUILD),RELEASE)
 endif
 
 dist:
-	butler push $(ITCHARCH) $(ITCHUSER)/$(ITCHGAME):$(ITCHARCH)-$(RELEASE) --userversion-file $(RESDIR)/VERSION
+	butler push $(ITCHARCH) $(ITCHUSER)/$(ITCHGAME):$(ITCHARCH) --userversion-file $(RESDIR)/VERSION
 
 clean:
 	$(rm) $(wildcard $(DEPDIR)/**/*.d)

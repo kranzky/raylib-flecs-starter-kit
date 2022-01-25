@@ -7,7 +7,9 @@
       "type": "lldb",
       "request": "launch",
       "preLaunchTask": "build starterkit",
-      "program": "${workspaceFolder}/bin/starterkit"
+      "program": "${workspaceFolder}/bin/starterkit",
+      "args": [],
+      "cwd":"${workspaceFolder}"
     }
   ]
 }
