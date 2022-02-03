@@ -10,6 +10,7 @@ typedef enum TextureName
   TEXTURE_SHIP,
   TEXTURE_BULLET,
   TEXTURE_SHEEP,
+  TEXTURE_BLIP,
   MAX_TEXTURES
 } TextureName;
 

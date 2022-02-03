@@ -2,9 +2,9 @@
 
 #include <raylib.h>
 #include <flecs.h>
-#include <chipmunk.h>
 
 #include "../components/display.h"
+#include "../components/time.h"
 #include "../systems/scene.h"
 
 #include "texture.h"
@@ -19,14 +19,14 @@
 #include "settings.h"
 #include "debug.h"
 #include "input.h"
-#include "nuklear.h"
+#include "gui.h"
+#include "physics.h"
 
 #include "game.h"
 
 //==============================================================================
 
 static ecs_world_t *_world = NULL;
-static cpSpace *_space = NULL;
 
 //==============================================================================
 
@@ -38,15 +38,6 @@ _fini(ecs_world_t *world, void *context)
     CloseAudioDevice();
   }
   CloseWindow();
-  cpSpaceFree(_space);
-  _space = NULL;
-}
-
-//------------------------------------------------------------------------------
-
-static inline void _init_chipmunk()
-{
-  _space = cpSpaceNew();
 }
 
 //------------------------------------------------------------------------------
@@ -55,8 +46,8 @@ static inline void _init_flecs()
 {
   _world = ecs_init();
   ecs_atfini(_world, _fini, NULL);
+  // ecs_set_entity_range(_world, 1, 1000);
   // ecs_set_threads(world, 12);
-  // TODO: pre-allocate memory with ecs_dim and ecs_dim_type
 }
 
 //------------------------------------------------------------------------------
@@ -70,13 +61,10 @@ static inline void _init_raylib()
   SetTraceLogLevel(LOG_TRACE);
 #endif
 
-  int flags = FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT;
+  int flags = FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE;
 
 #ifdef MAC
   flags = flags | FLAG_WINDOW_HIGHDPI;
-#endif
-#ifdef DEBUG
-  flags = flags | FLAG_WINDOW_RESIZABLE;
 #endif
 
   SetConfigFlags(flags);
@@ -85,6 +73,17 @@ static inline void _init_raylib()
 
   InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_NAME);
   InitAudioDevice();
+  if (!IsAudioDeviceReady())
+  {
+    TraceLog(LOG_WARNING, "Unable to initialise audio device :(");
+  }
+
+  InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_NAME);
+  if (!IsWindowReady())
+  {
+    TraceLog(LOG_ERROR, "Unable to initialise OpenGL context :(");
+    return;
+  }
 
   for (int i = 0; i < 2; ++i)
   {
@@ -93,6 +92,10 @@ static inline void _init_raylib()
     DrawTextEx(GetFontDefault(), "LOADING...", (Vector2){20, 20}, 24, 0, YELLOW);
     EndDrawing();
   }
+
+  char *mappings = LoadFileText("./res/gamecontrollerdb.txt");
+  SetGamepadMappings(mappings);
+  UnloadFileText((unsigned char *)mappings);
 }
 
 //------------------------------------------------------------------------------
@@ -110,7 +113,8 @@ static inline void _init_managers()
   debug_manager_init(_world);
   settings_manager_init(_world);
   input_manager_init(_world);
-  nuklear_manager_init(_world);
+  gui_manager_init(_world);
+  physics_manager_init(_world);
   system_manager_init(_world);
 }
 
@@ -118,8 +122,12 @@ static inline void _init_managers()
 
 static inline void _init_game()
 {
-  SetWindowIcon(GetTextureData(*texture_manager_get(TEXTURE_SHIP)));
+  if (IsWindowReady())
+  {
+    SetWindowIcon(GetTextureData(*texture_manager_get(TEXTURE_SHIP)));
+  }
   ecs_singleton_set(_world, Display, {.border = BLACK, .background = WHITE, .raster = {0, 0, RASTER_WIDTH, RASTER_HEIGHT}});
+  ecs_singleton_set(_world, Time, {.scale = 1});
 }
 
 //------------------------------------------------------------------------------
@@ -127,10 +135,10 @@ static inline void _init_game()
 static inline void _start_game()
 {
 #ifdef RELEASE
-  spawn_scene(_world, SCENE_SPLASH);
+  spawn_scene(_world, SCENE_SPLASH, 0);
 #endif
 #ifdef DEBUG
-  spawn_scene(_world, SCENE_TITLE);
+  spawn_scene(_world, SCENE_TITLE, 0);
 #endif
 }
 
@@ -140,7 +148,6 @@ void game_manager_init(void)
 {
   _init_raylib();
   _init_flecs();
-  _init_chipmunk();
   _init_managers();
   _init_game();
 }
@@ -152,10 +159,11 @@ void game_manager_loop(void)
   bool running = true;
   bool started = false;
   float time = 0;
+  if (!IsWindowReady())
+    return;
   while (running)
   {
     float delta = GetFrameTime();
-    cpSpaceStep(_space, delta);
     running = ecs_progress(_world, delta);
     time += delta;
     if (!started && time > 1)

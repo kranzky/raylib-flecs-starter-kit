@@ -13,21 +13,14 @@ typedef enum SceneName
   MAX_SCENES
 } SceneName;
 
-typedef enum SceneState
-{
-  SCENE_STATE_STARTING,
-  SCENE_STATE_RUNNING,
-  SCENE_STATE_STOPPING,
-  MAX_SCENE_STATES
-} SceneState;
-
 typedef struct Scene
 {
   SceneName id;
-  SceneState state;
   float time;
+  float value;
   Color color;
   Shader *shader;
+  Texture *texture;
 } Scene;
 
 ECS_COMPONENT_DECLARE(Scene);

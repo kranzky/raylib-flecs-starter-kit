@@ -8,9 +8,9 @@
 
 //==============================================================================
 
-void spawn_splash(ecs_world_t *world)
+ecs_entity_t spawn_splash(ecs_world_t *world, int value)
 {
-  entity_manager_spawn_scene(world, SCENE_SPLASH, WHITE, MAX_SHADERS);
+  return entity_manager_spawn_scene(world, SCENE_SPLASH, WHITE, MAX_SHADERS, MAX_TEXTURES);
 }
 
 //------------------------------------------------------------------------------
@@ -24,7 +24,7 @@ void init_splash(ecs_world_t *world, ecs_entity_t parent)
 
 //------------------------------------------------------------------------------
 
-bool update_splash(ecs_world_t *world, const Scene *scene, const Input *input, const Settings *settings)
+bool update_splash(ecs_world_t *world, const Scene *scene, ecs_entity_t parent, const Input *input, const Time *time, const Settings *settings)
 {
   return scene->time < 2 && !input->select && !input->quit;
 }
@@ -33,5 +33,5 @@ bool update_splash(ecs_world_t *world, const Scene *scene, const Input *input, c
 
 void fini_splash(ecs_world_t *world, const Scene *scene)
 {
-  spawn_scene(world, SCENE_TITLE);
+  spawn_scene(world, SCENE_TITLE, 0);
 }

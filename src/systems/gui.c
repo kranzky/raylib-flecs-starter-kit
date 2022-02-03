@@ -1,34 +1,79 @@
 #include <raylib.h>
 
+#include "../helpers.h"
+
 #include "../components/input.h"
-#include "../components/nuklear.h"
+#include "../components/interface.h"
 #include "../components/window.h"
 #include "../components/widget.h"
+#include "../components/settings.h"
+#include "../components/spatial.h"
 
 #include "../managers/texture.h"
 #include "../managers/font.h"
+#include "../managers/entity.h"
+#include "../managers/sound.h"
 
-#include "nuklear.h"
+#include "gui.h"
 
 //==============================================================================
 
 static bool _scissoring = false;
+static Vector2 _pointer = {0.5 * RASTER_WIDTH, 267.5};
+static Vector2 _mouse = {0.5 * RASTER_WIDTH, 0.5 * RASTER_HEIGHT};
+static bool _mode = true;
+static ecs_entity_t _hovered = 0;
+static float _timer = 0;
 
 //==============================================================================
 
-void nuklear_input(ecs_iter_t *it)
+void gui_input(ecs_iter_t *it)
 {
-  Nuklear *nuklear = ecs_column(it, Nuklear, 1);
-  Input *input = ecs_column(it, Input, 2);
-  nk_input_begin(nuklear);
-  nk_input_motion(nuklear, input->pointer.x, input->pointer.y);
-  nk_input_scroll(nuklear, (struct nk_vec2){0, input->wheel});
-  nk_input_button(nuklear, NK_BUTTON_LEFT, input->pointer.x, input->pointer.y, input->fire);
-  nk_input_key(nuklear, NK_KEY_LEFT, input->joystick.x < 0);
-  nk_input_key(nuklear, NK_KEY_RIGHT, input->joystick.x < 0);
-  nk_input_key(nuklear, NK_KEY_UP, input->joystick.y < 0);
-  nk_input_key(nuklear, NK_KEY_DOWN, input->joystick.y < 0);
-  nk_input_end(nuklear);
+  Interface *interface = ecs_term(it, Interface, 1);
+  Input *input = ecs_term(it, Input, 2);
+  Window *window = ecs_term(it, Window, 4);
+  _pointer.x = 0.5 * RASTER_WIDTH;
+  unsigned int max = 0;
+  for (int i = 0; i < it->count; ++i)
+  {
+    if (window[i].max > max)
+      max = window[i].max;
+  }
+  max -= 1;
+  if (_timer > 0)
+  {
+    if (input->joystick.y < -0.1)
+    {
+      _pointer.y -= 100;
+      _timer = -0.15;
+      _mode = false;
+    }
+    if (input->joystick.y > 0.1)
+    {
+      _pointer.y += 100;
+      _timer = -0.15;
+      _mode = false;
+    }
+  }
+  _timer += it->delta_time;
+  _pointer.y = Clamp(_pointer.y, 350, 350 + max * 100);
+  Vector2 delta = Vector2Subtract(_mouse, input->pointer);
+  _mouse = input->pointer;
+  if (Vector2LengthSqr(delta) > 0.1 || _mode)
+  {
+    _pointer = _mouse;
+    ShowCursor();
+    _mode = true;
+  }
+  else if (!_mode)
+  {
+    HideCursor();
+  }
+  nk_input_begin(interface);
+  nk_input_motion(interface, _pointer.x, _pointer.y);
+  nk_input_scroll(interface, (struct nk_vec2){0, input->wheel});
+  nk_input_button(interface, NK_BUTTON_LEFT, _pointer.x, _pointer.y, input->select);
+  nk_input_end(interface);
 }
 
 //------------------------------------------------------------------------------
@@ -47,12 +92,13 @@ static inline Color _from_color(struct nk_color color)
 
 //------------------------------------------------------------------------------
 
-void nuklear_update(ecs_iter_t *it)
+void gui_update(ecs_iter_t *it)
 {
-  Nuklear *nuklear = ecs_column(it, Nuklear, 1);
-  Window *window = ecs_column(it, Window, 2);
-  Widget *widget = ecs_column(it, Widget, 3);
-  if (nk_begin(nuklear, window->name, _to_rect(window->bounds), window->flags))
+  Interface *interface = ecs_term(it, Interface, 1);
+  Window *window = ecs_term(it, Window, 2);
+  Widget *widget = ecs_term(it, Widget, 3);
+  bool hover = false;
+  if (nk_begin(interface, window->name, _to_rect(window->bounds), window->flags))
   {
     for (int i = 0; i < it->count; ++i)
     {
@@ -62,25 +108,37 @@ void nuklear_update(ecs_iter_t *it)
         for (int j = i + 1; j < it->count; ++j, ++count)
           if (widget[j].type == WIDGET_SEPARATOR)
             break;
-        nk_layout_row_dynamic(nuklear, 0, count);
+        nk_layout_row_static(interface, 96, 1200, 1);
+        if (nk_widget_is_hovered(interface))
+        {
+          hover = true;
+          _hovered = it->entities[i];
+        }
+      }
+      if (nk_widget_is_hovered(interface))
+      {
+        hover = true;
+        _hovered = it->entities[i];
       }
       switch (widget[i].type)
       {
       case WIDGET_LABEL:
-        nk_label(nuklear, widget[i].name, NK_TEXT_LEFT);
+        nk_label(interface, widget[i].name, NK_TEXT_CENTERED);
         break;
       case WIDGET_BUTTON:
-        if (nk_button_label(nuklear, widget[i].name))
+        if (nk_button_label(interface, widget[i].name))
           widget[i].callback(it->world, &widget[i]);
         break;
       case WIDGET_SLIDER:
-        if (nk_slider_float(nuklear, 0, &widget[i].value, 100, 0.1))
+        if (nk_slider_float(interface, 0, &widget[i].value, 100, 0.1))
           widget[i].callback(it->world, &widget[i]);
         break;
       }
     }
   }
-  nk_end(nuklear);
+  nk_end(interface);
+  if (!hover)
+    _hovered = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -213,7 +271,7 @@ static inline void _text(const struct nk_command_text *command)
   Rectangle rect = (Rectangle){command->x, command->y, command->w, command->h};
   DrawRectangleRec(rect, back);
   Vector2 position = (Vector2){command->x, command->y};
-  DrawTextEx(*font_manager_get(FONT_CLOVER), command->string, position, size, 0.1 * size, fore);
+  DrawTextEx(*font_manager_get(FONT_CLOVER), command->string, position, size, 0, fore);
 }
 
 //------------------------------------------------------------------------------
@@ -232,14 +290,13 @@ static inline void _custom(const struct nk_command *command)
 
 //------------------------------------------------------------------------------
 
-// TODO: gui setting for nk_item_is_any_active
-void nuklear_render(ecs_iter_t *it)
+void gui_render(ecs_iter_t *it)
 {
-  Nuklear *nuklear = ecs_column(it, Nuklear, 1);
+  Interface *interface = ecs_term(it, Interface, 1);
   const struct nk_command *command;
   _scissoring = false;
   BeginTextureMode(*texture_manager_playfield());
-  nk_foreach(command, nuklear)
+  nk_foreach(command, interface)
   {
     switch (command->type)
     {
@@ -304,5 +361,25 @@ void nuklear_render(ecs_iter_t *it)
   if (_scissoring)
     EndScissorMode();
   EndTextureMode();
-  nk_clear(nuklear);
+  nk_clear(interface);
+}
+
+//------------------------------------------------------------------------------
+
+void gui_reset(int row)
+{
+  _pointer.y = 267.5 + row * 100;
+  _hovered = 0;
+  _mode = false;
+}
+
+//------------------------------------------------------------------------------
+
+void update_console(ecs_iter_t *it)
+{
+  Spatial *spatial = ecs_term(it, Spatial, 1);
+  for (int i = 0; i < it->count; ++i)
+  {
+    spatial[i].position.y = RASTER_HEIGHT * 0.75 - (it->count - i - 1) * 90;
+  }
 }

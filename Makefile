@@ -24,7 +24,7 @@ MAKE = make
 # compiler and default flags
 CC = gcc
 AR = ar
-CFLAGS = -Wall -Wextra -Wshadow -Wno-unused-parameter
+CFLAGS = -Wall -Wextra -Wshadow -Wno-unused-parameter -Wno-switch
 CFLAGS += -pedantic-errors -std=gnu11
 
 # linker and default flags

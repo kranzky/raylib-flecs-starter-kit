@@ -8,9 +8,9 @@
 
 //==============================================================================
 
-void spawn_level(ecs_world_t *world)
+ecs_entity_t spawn_level(ecs_world_t *world, int value)
 {
-  entity_manager_spawn_scene(world, SCENE_LEVEL, RED, SHADER_DEFAULT);
+  return entity_manager_spawn_scene(world, SCENE_LEVEL, RED, SHADER_DEFAULT, MAX_TEXTURES);
 }
 
 //------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ void init_level(ecs_world_t *world, ecs_entity_t parent)
 
 //------------------------------------------------------------------------------
 
-bool update_level(ecs_world_t *world, const Scene *scene, const Input *input, const Settings *settings)
+bool update_level(ecs_world_t *world, const Scene *scene, ecs_entity_t parent, const Input *input, const Time *time, const Settings *settings)
 {
   return !input->quit;
 }
@@ -32,5 +32,6 @@ bool update_level(ecs_world_t *world, const Scene *scene, const Input *input, co
 
 void fini_level(ecs_world_t *world, const Scene *scene)
 {
-  spawn_scene(world, SCENE_TITLE);
+  spawn_scene(world, SCENE_TITLE, 0);
 }
+

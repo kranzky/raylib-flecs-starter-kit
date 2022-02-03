@@ -7,6 +7,8 @@
 typedef enum TransitionName
 {
   TRANSITION_FADE_IN,
+  TRANSITION_HOLDING,
+  TRANSITION_WAITING,
   TRANSITION_FADE_OUT,
   MAX_TRANSITIONS
 } TransitionName;
@@ -16,6 +18,9 @@ typedef struct Transition
   TransitionName id;
   float fade;
   float time;
+  float hold;
+  float wait;
+  bool complete;
 } Transition;
 
 ECS_COMPONENT_DECLARE(Transition);

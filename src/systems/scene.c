@@ -5,8 +5,12 @@
 
 #include "../components/input.h"
 #include "../components/settings.h"
+#include "../components/time.h"
+#include "../components/stateful.h"
+#include "../components/transition.h"
 
 #include "../managers/entity.h"
+#include "../managers/system.h"
 
 #include "../scenes/splash.h"
 #include "../scenes/title.h"
@@ -16,9 +20,13 @@
 
 //==============================================================================
 
-typedef void (*spawnScene)(ecs_world_t *world);
+static ecs_entity_t _paused = 0;
+static ecs_entity_t _music = 0;
+static ecs_entity_t _menu = false;
+
+typedef ecs_entity_t (*spawnScene)(ecs_world_t *world, int value);
 typedef void (*initScene)(ecs_world_t *world, ecs_entity_t entity);
-typedef bool (*updateScene)(ecs_world_t *world, const Scene *scene, const Input *input, const Settings *settings);
+typedef bool (*updateScene)(ecs_world_t *world, const Scene *scene, ecs_entity_t entity, const Input *input, const Time *time, const Settings *settings);
 typedef void (*finiScene)(ecs_world_t *world, const Scene *scene);
 
 typedef struct JumpTarget
@@ -38,67 +46,171 @@ JumpTarget _targets[] = {[SCENE_TITLE] = {.spawn = spawn_title, .init = init_tit
 static inline void _init(ecs_world_t *world, Scene *scene, ecs_entity_t entity)
 {
   _targets[scene->id].init(world, entity);
-  entity_manager_spawn_transition(world, TRANSITION_FADE_IN);
-  scene->state = SCENE_STATE_RUNNING;
-  scene->time = 0;
 }
 
 //------------------------------------------------------------------------------
 
-static inline void _update(ecs_world_t *world, Scene *scene, const Input *input, const Settings *settings)
+static inline bool _update(ecs_world_t *world, Scene *scene, ecs_entity_t entity, const Input *input, const Time *time, const Settings *settings)
 {
-  if (scene->time > 0.3 && !_targets[scene->id].update(world, scene, input, settings))
-  {
-    scene->state = SCENE_STATE_STOPPING;
-    scene->time = 0;
-    entity_manager_spawn_transition(world, TRANSITION_FADE_OUT);
-  }
+  return _targets[scene->id].update(world, scene, entity, input, time, settings);
 }
 
 //------------------------------------------------------------------------------
 
 static inline void _fini(ecs_world_t *world, Scene *scene, ecs_entity_t entity)
 {
-  if (scene->time > 0.3)
-  {
-    _targets[scene->id].fini(world, scene);
-    ecs_delete(world, entity);
-  }
+  _targets[scene->id].fini(world, scene);
 }
 
 //==============================================================================
 
-void spawn_scene(ecs_world_t *world, SceneName id)
+ecs_entity_t spawn_scene(ecs_world_t *world, SceneName id, int value)
 {
-  _targets[id].spawn(world);
+  return _targets[id].spawn(world, value);
+}
+
+//------------------------------------------------------------------------------
+
+static inline void _pause(ecs_world_t *world)
+{
+  if (_paused == 0)
+  {
+    _paused = entity_manager_spawn_label(world, 0, FONT_CLOVER, "PAUSED", ALIGN_CENTRE, VALIGN_MIDDLE, 100, (Vector2){RASTER_WIDTH * 0.5, RASTER_HEIGHT * 0.5}, (Color){255, 0, 255, 255});
+    ShowCursor();
+    if (_music != 0)
+    {
+      music_manager_mute(world, _music);
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
+
+static inline void _unpause(ecs_world_t *world)
+{
+  if (_paused != 0)
+  {
+    HideCursor();
+    ecs_delete(world, _paused);
+    _paused = 0;
+    if (_music != 0)
+    {
+      music_manager_unmute(world, _music);
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
+
+static inline void _process_input(ecs_world_t *world, Input *input, Time *time, bool allow_pause)
+{
+  bool paused = time->paused;
+  if (input->toggle_pause || (input->quit && time->paused))
+    time->paused = !time->paused;
+  if (input->toggle_fullscreen)
+  {
+    time->paused = true;
+    ToggleFullscreen();
+  }
+  if (IsWindowResized() || !IsWindowFocused())
+    time->paused = true;
+  if (!allow_pause)
+    time->paused = false;
+  if (!paused && time->paused)
+    _pause(world);
+  else if (paused && !time->paused)
+    _unpause(world);
 }
 
 //------------------------------------------------------------------------------
 
 void update_scene(ecs_iter_t *it)
 {
-  Scene *scene = ecs_column(it, Scene, 1);
-  Input *input = ecs_column(it, Input, 2);
-  Settings *settings = ecs_column(it, Settings, 3);
-  if (input->toggle_fullscreen)
-    ToggleFullscreen();
+  Scene *scene = ecs_term(it, Scene, 1);
+  Stateful *stateful = ecs_term(it, Stateful, 2);
+  Transition *transition = ecs_term(it, Transition, 3);
+  Time *time = ecs_term(it, Time, 4);
+  Input *input = ecs_term(it, Input, 5);
+  Settings *settings = ecs_term(it, Settings, 6);
+  bool allow_paused = true;
   for (int i = 0; i < it->count; ++i)
   {
-    switch (scene[i].state)
+    switch (scene[i].id)
     {
-    case SCENE_STATE_STARTING:
+    case SCENE_SPLASH:
+    case SCENE_TITLE:
+    {
+      allow_paused = false;
+    }
+    }
+  }
+  _process_input(it->world, input, time, allow_paused);
+  for (int i = 0; i < it->count; ++i)
+  {
+    switch (stateful[i].state)
+    {
+    case STATE_CREATED:
+    {
       _init(it->world, &scene[i], it->entities[i]);
       break;
-    case SCENE_STATE_RUNNING:
-      _update(it->world, &scene[i], input, settings);
+    }
+    case STATE_STARTING:
+    {
+      if (stateful[i].transitioned)
+      {
+        transition[i].complete = false;
+        transition[i].id = TRANSITION_FADE_IN;
+        transition[i].time = 0;
+        transition[i].fade = 0;
+        switch (scene[i].id)
+        {
+        case SCENE_TITLE:
+        {
+          if (_music != 0 && !_menu)
+          {
+            music_manager_stop(it->world, _music);
+            _music = 0;
+          }
+          if (_music == 0)
+          {
+            _music = entity_manager_spawn_music(it->world, MUSIC_ROCK_VOMIT, 1);
+          }
+          _menu = true;
+          break;
+        }
+        }
+      }
       break;
-    case SCENE_STATE_STOPPING:
+    }
+    case STATE_RUNNING:
+    {
+      if (!_update(it->world, &scene[i], it->entities[i], input, time, settings))
+        stateful[i].run_time = 0;
+      break;
+    }
+    case STATE_STOPPING:
+    {
+      if (stateful[i].transitioned)
+      {
+        transition[i].complete = false;
+        transition[i].id = TRANSITION_FADE_OUT;
+        transition[i].time = 0;
+      }
+      break;
+    }
+    case STATE_STOPPED:
+    {
       _fini(it->world, &scene[i], it->entities[i]);
       break;
-    default:
-      TraceLog(LOG_WARNING, "bad scene state");
-      break;
-    };
-    scene[i].time += it->delta_time;
+    }
+    }
+    scene[i].time += time->delta;
   }
+}
+
+//------------------------------------------------------------------------------
+
+void scene_volume(ecs_world_t *world, Widget *widget)
+{
+  music_manager_volume(world, _music, widget->value * 0.01);
 }

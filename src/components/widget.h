@@ -13,14 +13,14 @@ typedef enum WidgetType
 } WidgetType;
 
 typedef struct Widget Widget;
-typedef void (*nuklearCallback)(ecs_world_t *world, Widget *widget);
+typedef void (*widgetCallback)(ecs_world_t *world, Widget *widget);
 
 typedef struct Widget
 {
   WidgetType type;
   const char *name;
   float value;
-  nuklearCallback callback;
+  widgetCallback callback;
 } Widget;
 
 ECS_COMPONENT_DECLARE(Widget);

@@ -35,13 +35,14 @@ void texture_manager_init(ecs_world_t *world)
   _load(TEXTURE_SHIP, "ship");
   _load(TEXTURE_BULLET, "bullet");
   _load(TEXTURE_SHEEP, "sheep");
+  _load(TEXTURE_BLIP, "blip");
 }
 
 //------------------------------------------------------------------------------
 
 Texture *texture_manager_get(TextureName id)
 {
-  return &_textures[id];
+  return (id == MAX_TEXTURES) ? NULL : &_textures[id];
 }
 //------------------------------------------------------------------------------
 

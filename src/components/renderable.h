@@ -7,7 +7,8 @@
 
 typedef struct Renderable
 {
-  Texture *texture;
+  const Texture *texture;
+  BlendMode blend_mode;
   Rectangle src;
   float scale;
 } Renderable;

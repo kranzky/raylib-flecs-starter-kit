@@ -1,11 +1,11 @@
 #include <tinyfiledialogs.h>
 
-#include "splash.h"
+#include "title.h"
 
 #include "../systems/scene.h"
 
 #include "../managers/entity.h"
-#include "../managers/nuklear.h"
+#include "../managers/gui.h"
 
 #include "../defines.h"
 
@@ -13,7 +13,7 @@
 
 static bool _quit = false;
 static bool _play = false;
-static ecs_entity_t _music = 0;
+
 
 //==============================================================================
 
@@ -31,16 +31,9 @@ static void _quit_game(ecs_world_t *world, Widget *widget)
 
 //------------------------------------------------------------------------------
 
-static void _set_volume(ecs_world_t *world, Widget *widget)
+ecs_entity_t spawn_title(ecs_world_t *world, int value)
 {
-  music_manager_volume(world, _music, widget->value * 0.01);
-}
-
-//------------------------------------------------------------------------------
-
-void spawn_title(ecs_world_t *world)
-{
-  entity_manager_spawn_scene(world, SCENE_TITLE, DARKGRAY, MAX_SHADERS);
+  return entity_manager_spawn_scene(world, SCENE_TITLE, DARKGRAY, MAX_SHADERS, MAX_TEXTURES);
 }
 
 //------------------------------------------------------------------------------
@@ -49,19 +42,17 @@ void init_title(ecs_world_t *world, ecs_entity_t parent)
 {
   Vector2 position = {RASTER_WIDTH * 0.5, 150};
   entity_manager_spawn_label(world, parent, FONT_CLOVER, "Title Screen", ALIGN_CENTRE, VALIGN_TOP, 50, position, ORANGE);
-  _music = entity_manager_spawn_music(world, MUSIC_ROCK_VOMIT, 1);
-  ecs_entity_t window = nuklear_window(world, parent, "Starter Kit", 100, 250, 440, 150);
-  nuklear_slider(world, window, 100, _set_volume);
-  nuklear_separator(world, window);
-  nuklear_button(world, window, "Play Game", _play_game);
-  nuklear_button(world, window, "Quit Game", _quit_game);
+  ecs_entity_t window = gui_window(world, parent, "Starter Kit", 100, 250, 440, 150, 0, 2);
+  gui_separator(world, window);
+  gui_button(world, window, "Play Game", 0, _play_game);
+  gui_button(world, window, "Quit Game", 1, _quit_game);
   _quit = false;
   _play = false;
 }
 
 //------------------------------------------------------------------------------
 
-bool update_title(ecs_world_t *world, const Scene *scene, const Input *input, const Settings *settings)
+bool update_title(ecs_world_t *world, const Scene *scene, ecs_entity_t parent, const Input *input, const Time *time, const Settings *settings)
 {
   _quit |= input->quit;
 #ifdef RELEASE
@@ -77,9 +68,8 @@ bool update_title(ecs_world_t *world, const Scene *scene, const Input *input, co
 
 void fini_title(ecs_world_t *world, const Scene *scene)
 {
-  music_manager_stop(world, _music);
   if (_quit)
     ecs_quit(world);
   else
-    spawn_scene(world, SCENE_LEVEL);
+    spawn_scene(world, SCENE_LEVEL, 0);
 }
