@@ -178,6 +178,16 @@ void update_scene(ecs_iter_t *it)
           _menu = true;
           break;
         }
+        case SCENE_LEVEL:
+        {
+          if (_music != 0)
+          {
+            music_manager_stop(it->world, _music);
+            _music = 0;
+          }
+          _menu = false;
+          break;
+        }
         }
       }
       break;
