@@ -10,6 +10,7 @@ typedef struct Window
   Rectangle bounds;
   unsigned int flags;
   unsigned int max;
+  unsigned int button_height;
 } Window;
 
 ECS_COMPONENT_DECLARE(Window);

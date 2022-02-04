@@ -147,7 +147,7 @@ void render_labels(ecs_iter_t *it)
     DrawTexturePro(*texture, src, dst, (Vector2){0, 0}, 0, (Color){0, 0, 0, 64});
     dst.y = RASTER_HEIGHT * 0.5 - 70;
     dst.height = 120;
-    DrawTexturePro(*texture, src, dst, (Vector2){0, 0}, 0, (Color){0, 255, 255, 255});
+    DrawTexturePro(*texture, src, dst, (Vector2){0, 0}, 0, ORANGE);
   }
   for (int i = 0; i < it->count; ++i)
   {
@@ -308,4 +308,3 @@ void animate(ecs_iter_t *it)
     renderable[i].src = (Rectangle){x, y, animated[i].width, animated[i].height};
   }
 }
-

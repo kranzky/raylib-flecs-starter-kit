@@ -44,19 +44,19 @@ void gui_input(ecs_iter_t *it)
   {
     if (input->joystick.y < -0.1)
     {
-      _pointer.y -= 100;
+      _pointer.y -= window->button_height;
       _timer = -0.15;
       _mode = false;
     }
     if (input->joystick.y > 0.1)
     {
-      _pointer.y += 100;
+      _pointer.y += window->button_height;
       _timer = -0.15;
       _mode = false;
     }
   }
   _timer += it->delta_time;
-  _pointer.y = Clamp(_pointer.y, 350, 350 + max * 100);
+  _pointer.y = Clamp(_pointer.y, window->bounds.y + window->button_height * 0.5, window->bounds.y + window->bounds.height - window->button_height * 0.5);
   Vector2 delta = Vector2Subtract(_mouse, input->pointer);
   _mouse = input->pointer;
   if (Vector2LengthSqr(delta) > 0.1 || _mode)
@@ -108,7 +108,7 @@ void gui_update(ecs_iter_t *it)
         for (int j = i + 1; j < it->count; ++j, ++count)
           if (widget[j].type == WIDGET_SEPARATOR)
             break;
-        nk_layout_row_static(interface, (window->bounds.height - (window->max + 1) * 4) / window->max, window->bounds.width, 1);
+        nk_layout_row_static(interface, window->button_height, window->bounds.width, 1);
         if (nk_widget_is_hovered(interface))
         {
           hover = true;

@@ -79,7 +79,8 @@ void gui_manager_init(ecs_world_t *world)
 ecs_entity_t gui_window(ecs_world_t *world, ecs_entity_t parent, const char *name, int x, int y, int width, int height, int row, int max)
 {
   ecs_entity_t entity = ecs_new(world, 0);
-  ecs_set(world, entity, Window, {.name = name, .bounds = (Rectangle){x, y, width, height}, .flags = NK_WINDOW_NO_SCROLLBAR, .max = max});
+  unsigned int button_height = (height - (max + 1) * 4) / max;
+  ecs_set(world, entity, Window, {.name = name, .bounds = (Rectangle){x, y, width, height}, .flags = NK_WINDOW_NO_SCROLLBAR, .max = max, .button_height = button_height});
   ecs_add_pair(world, entity, EcsChildOf, parent);
   gui_reset(row);
   return entity;
