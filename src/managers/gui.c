@@ -28,7 +28,7 @@ static void _fini(ecs_world_t *world, void *context)
 
 static float _nuklear_get_font_width(nk_handle handle, float size, const char *text, int length)
 {
-  return MeasureTextEx(*font_manager_get(FONT_CLOVER), text, size, 0.1 * size).x;
+  return MeasureTextEx(*font_manager_get(FONT_CLOVER), text, size, 0).x;
 }
 
 //------------------------------------------------------------------------------
@@ -67,17 +67,9 @@ void gui_manager_init(ecs_world_t *world)
 {
   ecs_atfini(world, _fini, NULL);
   ecs_singleton_set(world, Interface, {.clip = {.copy = _nuklear_clipboard_copy, .paste = _nuklear_clipboard_paste}});
-  _font = (struct nk_user_font){.height = 60u, .width = _nuklear_get_font_width};
+  _font = (struct nk_user_font){.height = GUI_FONT_HEIGHT, .width = _nuklear_get_font_width};
   Interface *interface = ecs_singleton_get_mut(world, Interface);
   nk_init_default(interface, &_font);
-  interface->style.window.fixed_background = nk_style_item_color(nk_rgba(0, 0, 0, 128));
-  interface->style.button.normal = nk_style_item_color(nk_rgba(0, 0, 0, 0));
-  interface->style.button.hover = nk_style_item_color(nk_rgba(255, 0, 255, 224));
-  interface->style.button.active = nk_style_item_color(nk_rgba(0, 255, 255, 255));
-  interface->style.button.border_color = nk_rgba(0, 0, 0, 0);
-  interface->style.button.text_normal = nk_rgba(255, 255, 255, 224);
-  interface->style.button.text_hover = nk_rgba(0, 255, 255, 224);
-  interface->style.button.text_active = nk_rgba(255, 0, 255, 255);
   ecs_singleton_modified(world, Interface);
   ECS_TRIGGER(world, _remove_window, EcsOnRemove, Window);
 }

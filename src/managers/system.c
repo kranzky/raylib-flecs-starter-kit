@@ -57,6 +57,7 @@ void system_manager_init(ecs_world_t *world)
   ECS_SYSTEM(world, render_physical, EcsOnStore, [in] Renderable, [in] Physical, [in] Tinted, [in] ?Transition);
   ECS_SYSTEM(world, gui_render, EcsOnStore, [inout] $Interface);
   ECS_SYSTEM(world, render_images, EcsOnStore, [in] Renderable, [in] Spatial, [in] Tinted);
+  ECS_SYSTEM(world, render_labels, EcsOnStore, [in] $Time, [in] Label, [in] Aligned, [in] Spatial, [in] Tinted);
 #ifdef DEBUG
   ECS_SYSTEM(world, debug_physics, EcsOnStore, [in] $Physics, [in] $Debug, [inout] Viewport);
   ECS_SYSTEM(world, debug_render, EcsOnStore, [in] Label, [in] $Debug, DebugTag, [out] :*);
@@ -73,4 +74,3 @@ ecs_query_t *system_manager_viewport_query(void)
 {
   return _viewport_query;
 }
-

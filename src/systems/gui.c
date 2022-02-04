@@ -108,7 +108,7 @@ void gui_update(ecs_iter_t *it)
         for (int j = i + 1; j < it->count; ++j, ++count)
           if (widget[j].type == WIDGET_SEPARATOR)
             break;
-        nk_layout_row_static(interface, 96, 1200, 1);
+        nk_layout_row_static(interface, (window->bounds.height - (window->max + 1) * 4) / window->max, window->bounds.width, 1);
         if (nk_widget_is_hovered(interface))
         {
           hover = true;

@@ -71,7 +71,6 @@ static inline void _init_raylib()
   SetTargetFPS(60);
   SetExitKey(0);
 
-  InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_NAME);
   InitAudioDevice();
   if (!IsAudioDeviceReady())
   {
