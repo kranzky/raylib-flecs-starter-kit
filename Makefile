@@ -26,6 +26,7 @@ CC = gcc
 AR = ar
 CFLAGS = -Wall -Wextra -Wshadow -Wno-unused-parameter -Wno-switch
 CFLAGS += -pedantic-errors -std=gnu11
+CFLAGS += -fcommon
 
 # linker and default flags
 LINKER = $(CC) -o

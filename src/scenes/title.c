@@ -45,7 +45,7 @@ void init_title(ecs_world_t *world, ecs_entity_t parent)
   gui_button(world, window, "Meesta Collecta", 0, _play_game);
   gui_button(world, window, "99 Sheep", 0, _play_game);
   gui_button(world, window, "Scorched Golf", 0, _play_game);
-  gui_button(world, window, "Tanks Very Much", 0, _play_game);
+  gui_button(world, window, "Breakdown", 0, _play_game);
   gui_button(world, window, "Quit to Desktop", 0, _quit_game);
   _quit = false;
   _play = false;
