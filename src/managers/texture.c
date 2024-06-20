@@ -46,7 +46,7 @@ Texture *texture_manager_get(TextureName id)
 }
 //------------------------------------------------------------------------------
 
-RenderTexture2D *texture_manager_playfield()
+RenderTexture2D *texture_manager_playfield(void)
 {
   return &_playfield;
 }

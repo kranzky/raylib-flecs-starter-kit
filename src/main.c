@@ -2,7 +2,7 @@
 
 //==============================================================================
 
-int main()
+int main(void)
 {
   game_manager_init();
   game_manager_loop();

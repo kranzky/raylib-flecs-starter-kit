@@ -42,7 +42,7 @@ _fini(ecs_world_t *world, void *context)
 
 //------------------------------------------------------------------------------
 
-static inline void _init_flecs()
+static inline void _init_flecs(void)
 {
   _world = ecs_init();
   ecs_atfini(_world, _fini, NULL);
@@ -52,7 +52,7 @@ static inline void _init_flecs()
 
 //------------------------------------------------------------------------------
 
-static inline void _init_raylib()
+static inline void _init_raylib(void)
 {
 #ifdef RELEASE
   SetTraceLogLevel(LOG_ERROR);
@@ -99,7 +99,7 @@ static inline void _init_raylib()
 
 //------------------------------------------------------------------------------
 
-static inline void _init_managers()
+static inline void _init_managers(void)
 {
   texture_manager_init(_world);
   sound_manager_init(_world);
@@ -119,7 +119,7 @@ static inline void _init_managers()
 
 //------------------------------------------------------------------------------
 
-static inline void _init_game()
+static inline void _init_game(void)
 {
   if (IsWindowReady())
   {
@@ -131,7 +131,7 @@ static inline void _init_game()
 
 //------------------------------------------------------------------------------
 
-static inline void _start_game()
+static inline void _start_game(void)
 {
 #ifdef RELEASE
   spawn_scene(_world, SCENE_SPLASH, 0);
